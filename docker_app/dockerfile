@@ -21,7 +21,7 @@ RUN conda update conda && \
 
 # Install QIIME 2 within a conda environment
 RUN wget https://data.qiime2.org/distro/core/qiime2-2022.8-py38-linux-conda.yml
-RUN conda env create -n microbiomecovid --file qiime2-2022.8-py38-linux-conda.yml
+RUN conda env create -n microbiome --file qiime2-2022.8-py38-linux-conda.yml
 RUN rm qiime2-2022.8-py38-linux-conda.yml
 
 # Install R package from Bioconductor
@@ -47,5 +47,3 @@ RUN pip install colorama
 
 # Create the microbiome folder in the Docker image
 RUN mkdir -p /home/microbiome
-
-CMD ["/bin/bash", "/home/microbiome/docker_app/src/app.sh"] 

@@ -9,7 +9,7 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-source activate qiime2-amplicon-2023.9
+source activate microbiome
 
 case $1 in 
 asv)

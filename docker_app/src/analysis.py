@@ -3,16 +3,6 @@ from colorama import Fore, Style
 import view.utilities as utilities
 
 
-def install_packages(env_name):
-    try:
-        subprocess.run(["pip install colorama"], shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing packages: {e}")
-
-
-install_packages("qiime2-amplicon-2023.9")
-
-
 def print_message(message, color=Fore.WHITE, style=Style.NORMAL):
     print(f"{style}{color}{message}{Style.RESET_ALL}")
 

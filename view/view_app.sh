@@ -1,6 +1,6 @@
 echo View app activated
 
-source /home/piermarco/miniconda3/bin/activate qiime2-amplicon-2023.9
+source /home/piermarco/miniconda3/bin/activate microbiome
 
 echo conda environment activated
 

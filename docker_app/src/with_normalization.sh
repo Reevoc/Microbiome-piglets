@@ -4,7 +4,7 @@ echo START script with normalization
 
 cd /home/microbiome
 
-source activate qiime2-amplicon-2023.9
+source activate microbiome
 
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <taxa_type> <normalization_type> <imputation>"
@@ -118,7 +118,7 @@ if [ "$2" == "clr" ]; then
     Rscript src/CLR.R $1
 fi
 
-source activate qiime2-amplicon-2023.9
+source activate microbiome
 cd /home/microbiome
 echo "converting $1_table_norm.biom in $1_$2_table_norm.qza "
 

@@ -4,7 +4,7 @@ echo START APP.SH
 cd /home/microbiome/src
 
 echo ACTIVATE ENVIRONMENT
-source activate qiime2-amplicon-2023.9
+source activate microbiome
 
 echo UNIZP ARCHIVE
 unzip /home/microbiome/data.zip -d /home/microbiome/

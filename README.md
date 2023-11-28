@@ -1,6 +1,4 @@
-*# Project Name
-
-Brief description of your project.
+# Microbiome_piglets
 
 ## Getting Started
 

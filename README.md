@@ -73,7 +73,7 @@ Follow these steps to set up the Docker environment:
    cd /your/path/to/Microbiome_piglets/docker_app
    ```
 
-6. Download the "data.zip" file from [Google Drive](https://drive.google.com/file/d/1B9_swa8VqM_8MaBl6xNo6z1REelOm_BY/view?usp=drive_link) and unzip it in the same directory as the Docker image:
+6. Download the "data.zip" file from [Google Drive](https://drive.google.com/file/d/1Kx87HDn-XSEu_YU5cFvs7jH2YGkJLU-w/view?usp=drive_link) and unzip it in the same directory as the Docker image:
 
    ```bash
    cd path/to/your/download_where_data.zip

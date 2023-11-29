@@ -19,10 +19,9 @@ ENV PATH=/opt/conda/bin:$PATH
 RUN conda update conda && \
     conda install wget
 
-# Install QIIME 2 within a conda environment
-RUN wget https://data.qiime2.org/distro/core/qiime2-2022.8-py38-linux-conda.yml
-RUN conda env create -n microbiome --file qiime2-2022.8-py38-linux-conda.yml
-RUN rm qiime2-2022.8-py38-linux-conda.yml
+RUN wget https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2023.9-py38-linux-conda.yml
+RUN conda env create -n microbiome --file qiime2-amplicon-2023.9-py38-linux-conda.yml
+RUN rm qiime2-amplicon-2023.9-py38-linux-conda.yml
 
 # Install R package from Bioconductor
 RUN Rscript -e 'requireNamespace("BiocManager"); BiocManager::install(c("Maaslin2", "ALDEx2"));'

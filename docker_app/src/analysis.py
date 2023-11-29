@@ -1,6 +1,5 @@
 import subprocess
 from colorama import Fore, Style
-import view.utilities as utilities
 
 
 def print_message(message, color=Fore.WHITE, style=Style.NORMAL):

@@ -141,6 +141,31 @@ Follow these steps to set up the View environment:
    cd Microbiome_piglets/view
    bash view_app.sh
    ```
+## QIIME 2: Core Concepts
+
+### Data Files: QIIME 2 Artifacts
+QIIME 2 utilizes artifacts to store data and metadata, offering a comprehensive representation of information. Artifacts, typically saved with a **.qza extension**, encompass details like data type, format, and provenance. By working with artifacts instead of conventional data files, researchers can streamline analyses, allowing a focus on analytical aspects without being constrained by specific data formats.
+
+Artifacts facilitate automatic tracking of data lineage, ensuring **reproducibility and simplifying collaboration**. The decentralized provenance tracking system allows researchers to understand precisely how artifacts were generated, supporting proper attribution to underlying tools used in the analysis.
+
+### Data Files: Visualizations
+Visualizations in QIIME 2, denoted by **.qzv file extensions**, serve as terminal outputs showcasing results such as statistical tables, interactive visualizations, or static images. Unlike artifacts, **visualizations cannot be used as inputs for subsequent analyses but provide standalone, shareable information with embedded provenance data**.
+
+### Semantic Types
+Every QIIME 2 artifact is associated with a semantic type, enabling the software to identify suitable inputs for analyses. Semantic types prevent incompatible artifacts from being used in certain analyses, ensuring semantic correctness and meaningful results.
+
+Visit the semantic types page for comprehensive information on available types and their applications.
+
+### Plugins
+QIIME 2 functionality is delivered through plugins, offering a modular approach to microbiome analyses. Users install plugins, such as **q2-demux** or **q2-diversity**, to access specific analyses. While the QIIME 2 team develops official plugins, third-party developers are encouraged to create additional plugins, fostering a decentralized ecosystem for diverse analyses.
+
+Check the plugin availability page to explore the current offerings and the future plugins page for upcoming developments.
+
+### Methods and Visualizers
+QIIME 2 plugins define methods and visualizers for conducting analyses. Methods accept artifacts and parameters as input, producing one or more artifacts as output. Visualizers, on the other hand, produce a single visualization as terminal output. These components form the building blocks of QIIME 2 analyses, offering flexibility and customization.
+
+*© Copyright 2016-2022, QIIME 2 development team. Created using Sphinx 5.3.0.*
+
 
 ## Ideas Behind the analysis
 The data where give with the first part of preprocessing to me, so I didn't do any preprocessing. The data was already filtered and denoised. But to have a better understanding of the data I will explain the steps of preprocessing.
@@ -157,8 +182,6 @@ Here is a small snippet of the first 5 rows of the dataset to give you an overvi
 | 1450088F1381049_S2_L001    | $PWD/original_data/Raw_data/1450088F1381049_S2_L001_R1_001.fastq.gz     | $PWD/original_data/Raw_data/1450088F1381049_S2_L001_R2_001.fastq.gz     |
 | 1450089F1381050_S3_L001    | $PWD/original_data/Raw_data/1450089F1381050_S3_L001_R1_001.fastq.gz     | $PWD/original_data/Raw_data/1450089F1381050_S3_L001_R2_001.fastq.gz     |
 | 1450090F1381051_S4_L001    | $PWD/original_data/Raw_data/1450090F1381051_S4_L001_R1_001.fastq.gz     | $PWD/original_data/Raw_data/1450090F1381051_S4_L001_R2_001.fastq.gz     |
-
-Certainly! Let me provide a more concise and user-friendly explanation for a README file on GitHub:
 
 #### FASTQ Format Overview
 
@@ -278,28 +301,5 @@ This is a small sample of the metadata provided as tsv format:
 
    Gestation is currently treated as a numeric variable. However, there is potential value in dichotomizing it between primiparous and pluriparous, aligning with the classical classification employed within the farm. This classification could enhance the granularity of the analysis and provide more nuanced results.
 
-## QIIME 2: Core Concepts
 
-### Data Files: QIIME 2 Artifacts
-QIIME 2 utilizes artifacts to store data and metadata, offering a comprehensive representation of information. Artifacts, typically saved with a **.qza extension**, encompass details like data type, format, and provenance. By working with artifacts instead of conventional data files, researchers can streamline analyses, allowing a focus on analytical aspects without being constrained by specific data formats.
-
-Artifacts facilitate automatic tracking of data lineage, ensuring **reproducibility and simplifying collaboration**. The decentralized provenance tracking system allows researchers to understand precisely how artifacts were generated, supporting proper attribution to underlying tools used in the analysis.
-
-### Data Files: Visualizations
-Visualizations in QIIME 2, denoted by **.qzv file extensions**, serve as terminal outputs showcasing results such as statistical tables, interactive visualizations, or static images. Unlike artifacts, **visualizations cannot be used as inputs for subsequent analyses but provide standalone, shareable information with embedded provenance data**.
-
-### Semantic Types
-Every QIIME 2 artifact is associated with a semantic type, enabling the software to identify suitable inputs for analyses. Semantic types prevent incompatible artifacts from being used in certain analyses, ensuring semantic correctness and meaningful results.
-
-Visit the semantic types page for comprehensive information on available types and their applications.
-
-### Plugins
-QIIME 2 functionality is delivered through plugins, offering a modular approach to microbiome analyses. Users install plugins, such as **q2-demux** or **q2-diversity**, to access specific analyses. While the QIIME 2 team develops official plugins, third-party developers are encouraged to create additional plugins, fostering a decentralized ecosystem for diverse analyses.
-
-Check the plugin availability page to explore the current offerings and the future plugins page for upcoming developments.
-
-### Methods and Visualizers
-QIIME 2 plugins define methods and visualizers for conducting analyses. Methods accept artifacts and parameters as input, producing one or more artifacts as output. Visualizers, on the other hand, produce a single visualization as terminal output. These components form the building blocks of QIIME 2 analyses, offering flexibility and customization.
-
-*© Copyright 2016-2022, QIIME 2 development team. Created using Sphinx 5.3.0.*
-
+###

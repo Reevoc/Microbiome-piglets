@@ -286,8 +286,7 @@ This is a small sample of the metadata provided as tsv format:
 
 - **ppt_sow**: [categorical] Treatment received by the sow post-partum.
 
-#### Meta data considerations
-
+#### Meta data considerations (Challange)
 
 1. **Redundancy in Numeric Features**
 
@@ -302,4 +301,62 @@ This is a small sample of the metadata provided as tsv format:
    Gestation is currently treated as a numeric variable. However, there is potential value in dichotomizing it between primiparous and pluriparous, aligning with the classical classification employed within the farm. This classification could enhance the granularity of the analysis and provide more nuanced results.
 
 
-###
+#### Work with Metadata in qiime2
+
+In the context of the **piglet microbiome study**, the provided metadata samples serve as a pivotal component for extracting biological insights from the processed data through QIIME 2. Within these piglet samples, the metadata encompasses crucial technical details, such as the **DNA barcodes employed in multiplexed sequencing, and specific descriptions including sow identification, room, sex, presence of diarrhea, neighborhood family identification, and gestation information**. Furthermore, the feature metadata within the samples includes annotations like the **sow's postpartum treatment category**.
+
+For the piglet microbiome study, the initial steps involve the collection of metadata specific to the piglet samples before commencing a QIIME 2 analysis. In this case, the data provided earlier will undergo a comprehensive analysis from the beginning to assess if certain metadata can be omitted or modified.
+
+In this context, the investigator has the flexibility to determine the information to be collected and tracked as metadata for the study. It is our opportunity to capture information deemed crucial for the piglet microbiome analyses, as QIIME 2 does not automatically gather this information from the samples. **In cases of uncertainty, it is advisable to collect comprehensive metadata for the piglet samples, considering the potential challenges of retroactively obtaining certain types of information related to piglet health and characteristics**.
+
+[Qiime2 Metadata Details](https://docs.qiime2.org/2023.9/tutorials/metadata/)
+
+## Starting the real analysis with qiime2
+
+![Qiime2 pipeline](/png/overview.png)
+*The edges and nodes in this overview do not represent specific actions or data types, but instead represent conceptual categories, e.g., the basic types of data or analytical goals we might have in an experiment. All of these steps and terms are discussed in more detail below.
+© Copyright 2016-2022, QIIME 2 development team. Created using Sphinx 5.3.0.*
+
+The provided data files offer insights into a standardized sequence of analyses, covering key stages up to the generation of Feature Tables, Taxonomy Classification, and the creation of Taxonomy and Phylogenetic Tree outputs. 
+**Analysis Steps alrady done:**
+
+1. **Taxonomy Classification:** Assigning taxonomic labels to sequence variants or operational taxonomic units (OTUs).
+
+2. **Taxonomy and Phylogenetic Tree:** Constructing a hierarchical representation of taxonomic relationships and a phylogenetic tree for deeper insights.
+
+3. **Generation of ASV, Species, and Genus Tables:**
+This critical step involves creating tables for Amplicon Sequence Variants (ASVs) at the species and genus levels. ASVs offer a finer resolution, empowering researchers to investigate microbial diversity and composition in greater detail. The resulting tables provide valuable insights into the specific patterns associated with species and genera within the microbiome.
+
+### 1) Demultiplexing 
+
+Picture this: I've just received freshly generated FASTQ data straight from the sequencing instrument. Most next-gen sequencing instruments have the remarkable capability to analyze hundreds or even thousands of samples in a single run. How is this achieved? Through multiplexing, a technique that involves mixing a multitude of samples together.
+
+Now, the challenge arises: how do we discern which sample each read originated from? This is where barcoding comes into play. A unique barcode (also known as an index or tag) sequence is appended to one or both ends of every sequence. Identifying and mapping these barcode sequences back to their respective samples enables us to demultiplex our sequences.
+
+The demultiplexing process in QIIME 2 follows a workflow similar to the one outlined below:
+
+![Demultiplexing](/png/derep-denoise.png)
+*© 2021 QIIME 2 development team. Created using Sphinx 4.0.1.*
+
+#### Demultiplexing qzv results
+
+If you want to see it in interactive way you can follow the instructions [here](#installing-view-app) also i provide in an image how it should look in the terminal.
+**TOFIX IMAGE**
+![terminal for view app](/png/Interactive-view.png)
+*when you digit any number the qzv file will open in your browser*
+
+##### Demultiplexed Sequence Counts Summary
+
+|                | Forward Reads | Reverse Reads |
+|----------------|---------------|---------------|
+| Minimum        | 45991         | 45991         |
+| Median         | 71013.5       | 71013.5       |
+| Mean           | 72808.958333  | 72808.958333  |
+| Maximum        | 137157        | 137157        |
+| Total          | 8737075       | 8737075       |
+
+
+
+
+
+

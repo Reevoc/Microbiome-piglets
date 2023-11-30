@@ -171,7 +171,7 @@ QIIME 2 plugins define methods and visualizers for conducting analyses. Methods 
 The data where give with the first part of preprocessing to me, so I didn't do any preprocessing. The data was already filtered and denoised. But to have a better understanding of the data I will explain the steps of preprocessing.
 I first of all devided the data into folder, the dolder are numbered and followed by what kind of process was done on the data.
 
-### 0.1 Piglets Manifest
+### 0.1) Piglets Manifest
 
 Here is a small snippet of the first 5 rows of the dataset to give you an overview:
 
@@ -237,7 +237,7 @@ BCCFFFFFHHHHHJJIJIJJIJJJJJJJJJJJJIJJJJJJJJJIIJJJJJJJJJJJJJJHHHFFFFFDDDDDDDDDDC
 
 FASTQ files are crucial for various bioinformatics tasks, including read mapping and variant calling. Understanding this format is essential for effective data analysis.
 
-### 0.2 piglets Metadata
+### 0.2) piglets Metadata
 This is a small sample of the metadata provided as tsv format:
    
 
@@ -338,7 +338,7 @@ The demultiplexing process in QIIME 2 follows a workflow similar to the one outl
 ![Demultiplexing](/png/derep-denoise.png)
 *© 2021 QIIME 2 development team. Created using Sphinx 4.0.1.*
 
-#### Demultiplexing qzv results
+#### Demultiplexing (VIEW .qzv)
 
 If you want to see it in interactive way you can follow the instructions [here](#installing-view-app) also i provide in an image how it should look in the terminal.
 **TOFIX IMAGE**
@@ -354,6 +354,73 @@ If you want to see it in interactive way you can follow the instructions [here](
 | Mean           | 72808.958333  | 72808.958333  |
 | Maximum        | 137157        | 137157        |
 | Total          | 8737075       | 8737075       |
+
+##### Demultiplexed Histogram (Forward Reads)
+
+![Instogram demultiplexing](/png/demultiplex-summary-forward.pdf)
+
+##### Demultiplexed Histogram (Reverse Reads)
+
+![Instogram demultiplexing](/png/demultiplex-summary-reverse.pdf)
+
+##### Demultiplexed Sequence Length Summary
+
+###### Forward Reads
+
+| Metric                  | Forwar Reads     | Reverse Reas |
+|-------------------------|------------| ------------|
+| Total Sequences Sampled | 10000.0    | 10000.0    |
+| 2%                      | 301 nts    | 301 nts    |
+| 9%                      | 301 nts    | 301 nts    |
+| 25%                     | 301 nts    |  301 nts   |
+| 50% (Median)            | 301 nts    | 301 nts    |
+| 75%                     | 301 nts    | 301 nts    |
+| 91%                     | 301 nts    | 301 nts    |
+| 98%                     | 301 nts    | 301 nts    |
+
+### 2) Demultiplexing Trimming 
+
+#### Demultiplexing Trimming (VIEW .qzv)
+
+##### Demultiplexed Sequence Counts Summary
+
+| Metric   | Forward Reads | Reverse Reads |
+|----------|---------------|---------------|
+| Minimum  | 39756         | 39756         |
+| Median   | 61078.5       | 61078.5       |
+| Mean     | 62355.158333  | 62355.158333  |
+| Maximum  | 107687        | 107687        |
+| Total    | 7482619       | -     7482619        |
+
+##### Demultiplexed Histogram (Forward Reads)
+
+![Instogram demultiplexing](/png/demultiplex-summary-forward-trim.pdf)
+
+##### Demultiplexed Histogram (Reverse Reads)
+
+![Instogram demultiplexing](/png/demultiplex-summary-reverse-trim.pdf)
+
+##### Demultiplexed Sequence Counts Summary
+
+| Metric                  | Forward Reads | Reverse Reads |
+|-------------------------|---------------|---------------|
+| Total Sequences Sampled | 10000.0       | 10000.0       |
+| 2%                      | 281 nts       | 277 nts       |
+| 9%                      | 281 nts       | 277 nts       |
+| 25%                     | 282 nts       | 278 nts       |
+| 50% (Median)            | 283 nts       | 279 nts       |
+| 75%                     | 283 nts       | 280 nts       |
+| 91%                     | 284 nts       | 280 nts       |
+| 98%                     | 284 nts       | 280 nts       |
+
+### 3) Pre-imputation
+| sample-id               | input | filtered | percentage of input passed filter | denoised | merged | percentage of input merged | non-chimeric | percentage of input non-chimeric |
+|-------------------------|-------|----------|-------------------------------------|----------|--------|-----------------------------|--------------|-------------------------------------|
+| 1450087F1381048_S1_L001 | 74825 | 65174    | 87.1                                | 62132    | 54583  | 72.95                       | 45234        | 60.45                               |
+| 1450088F1381049_S2_L001 | 67114 | 58593    | 87.3                                | 58029    | 26867  | 40.03                       | 20511        | 30.56                               |
+| 1450089F1381050_S3_L001 | 52530 | 45634    | 86.87                               | 45457    | 873    | 1.66                        | 847          | 1.61                                |
+| 1450090F1381051_S4_L001 | 80751 | 70460    | 87.26                               | 69864    | 28422  | 35.2                        | 23196        | 28.73                               |
+| 1450091F1381052_S5_L001 | 94343 | 83303    | 88.3                                | 80109    | 69916  | 74.11                       | 53679        | 56.9                                |
 
 
 

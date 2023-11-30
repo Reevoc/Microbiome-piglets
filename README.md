@@ -313,7 +313,7 @@ In this context, the investigator has the flexibility to determine the informati
 
 ## Starting the real analysis with qiime2
 
-![Qiime2 pipeline](/png/overview.png)
+![Qiime2 pipeline](/images/overview.png)
 *The edges and nodes in this overview do not represent specific actions or data types, but instead represent conceptual categories, e.g., the basic types of data or analytical goals we might have in an experiment. All of these steps and terms are discussed in more detail below.
 © Copyright 2016-2022, QIIME 2 development team. Created using Sphinx 5.3.0.*
 
@@ -335,14 +335,14 @@ Now, the challenge arises: how do we discern which sample each read originated f
 
 The demultiplexing process in QIIME 2 follows a workflow similar to the one outlined below:
 
-![Demultiplexing](/png/derep-denoise.png)
+![Demultiplexing](/images/derep-denoise.png)
 *© 2021 QIIME 2 development team. Created using Sphinx 4.0.1.*
 
 #### Demultiplexing (VIEW .qzv)
 
 If you want to see it in interactive way you can follow the instructions [here](#installing-view-app) also i provide in an image how it should look in the terminal.
 **TOFIX IMAGE**
-![terminal for view app](/png/Interactive-view.png)
+![terminal for view app](/images/Interactive-view.png)
 *when you digit any number the qzv file will open in your browser*
 
 ##### Demultiplexed Sequence Counts Summary
@@ -357,11 +357,11 @@ If you want to see it in interactive way you can follow the instructions [here](
 
 ##### Demultiplexed Histogram (Forward Reads)
 
-![Instogram demultiplexing](/png/demultiplex-summary-forward.pdf)
+![Instogram demultiplexing](/images/demultiplex-summary-forward.pdf)
 
 ##### Demultiplexed Histogram (Reverse Reads)
 
-![Instogram demultiplexing](/png/demultiplex-summary-reverse.pdf)
+![Instogram demultiplexing](/images/demultiplex-summary-reverse.pdf)
 
 ##### Demultiplexed Sequence Length Summary
 
@@ -394,11 +394,11 @@ If you want to see it in interactive way you can follow the instructions [here](
 
 ##### Demultiplexed Histogram (Forward Reads)
 
-![Instogram demultiplexing](/png/demultiplex-summary-forward-trim.pdf)
+![Instogram demultiplexing](/images/demultiplex-summary-forward-trim.pdf)
 
 ##### Demultiplexed Histogram (Reverse Reads)
 
-![Instogram demultiplexing](/png/demultiplex-summary-reverse-trim.pdf)
+![Instogram demultiplexing](/images/demultiplex-summary-reverse-trim.pdf)
 
 ##### Demultiplexed Sequence Counts Summary
 
@@ -413,7 +413,10 @@ If you want to see it in interactive way you can follow the instructions [here](
 | 91%                     | 284 nts       | 280 nts       |
 | 98%                     | 284 nts       | 280 nts       |
 
-### 3) Pre-imputation
+### 2.2) Pre-imputation
+
+#### Pre-imputation (VIEW .qzv)
+
 | sample-id               | input | filtered | percentage of input passed filter | denoised | merged | percentage of input merged | non-chimeric | percentage of input non-chimeric |
 |-------------------------|-------|----------|-------------------------------------|----------|--------|-----------------------------|--------------|-------------------------------------|
 | 1450087F1381048_S1_L001 | 74825 | 65174    | 87.1                                | 62132    | 54583  | 72.95                       | 45234        | 60.45                               |
@@ -421,6 +424,10 @@ If you want to see it in interactive way you can follow the instructions [here](
 | 1450089F1381050_S3_L001 | 52530 | 45634    | 86.87                               | 45457    | 873    | 1.66                        | 847          | 1.61                                |
 | 1450090F1381051_S4_L001 | 80751 | 70460    | 87.26                               | 69864    | 28422  | 35.2                        | 23196        | 28.73                               |
 | 1450091F1381052_S5_L001 | 94343 | 83303    | 88.3                                | 80109    | 69916  | 74.11                       | 53679        | 56.9                                |
+
+### 3) Imputation
+
+https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02400-4
 
 
 

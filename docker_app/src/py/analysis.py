@@ -10,8 +10,8 @@ def print_explanation(message, color=Fore.YELLOW, style=Style.BRIGHT):
     print_message(message, color, style)
 
 
-sh_normalization = "/home/microbiome/src/sh/normalization.sh"
-sh_metrics = "/home/microbiome/src/sh/metricsAB.sh"
+sh_normalization = "/home/microbiome/docker_app/src/sh/normalization.sh"
+sh_metrics = "/home/microbiome/docker_app/src/sh/metricsAB.sh"
 
 print_explanation(
     "This script will execute normalization on the data and then run the metrics script. The data is organized in folders for better pipeline understanding. Inside each folder, the first number represents the pipeline order, the second number represents the taxa analyzed (1=asv, 2=genus, 3=species), and the rest describes the taxa level. You can also find .qza or .qzv .biom files used for the analysis.\n"

@@ -5,7 +5,7 @@ echo START APP.SH
 echo ACTIVATE ENVIRONMENT
 source activate microbiome
 
-cd /home/microbiome/src/py
+cd /home/microbiome/docker_app/src/py
 echo RUN ANALYSIS
 python analysis.py
 

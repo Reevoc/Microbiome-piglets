@@ -43,57 +43,29 @@ Follow these steps to set up the Docker environment:
       docker --version
       ```
 
-2. Build the Docker image (ensure you are in the correct directory before building):
-
-   ```bash
-   docker build -t microbiome_piglets .
-   ```
-
-3. Run the Docker image:
-
-   ```bash
-   docker run -e PASSWORD=pass -p 8787:8787 -d microbiome_piglets
-   ```
-
-4. Clone the useful GitHub repository downloaded locally into the Docker image:
-
-   ```bash
-   docker cp /your/path/to/Microbiome_piglets/docker_app/ CONTAINER_ID:/home/microbiome
-   ```
-
-   - Replace `CONTAINER_ID` with the ID of the Docker container, which you can find using:
-
-      ```bash
-      docker ps
-      ```
-
-5. Change into the project directory:
-
-   ```bash
-   cd /your/path/to/Microbiome_piglets/docker_app
-   ```
-
-6. Download the "data.zip" file from [Google Drive](https://drive.google.com/file/d/1Kx87HDn-XSEu_YU5cFvs7jH2YGkJLU-w/view?usp=drive_link) and unzip it in the same directory as the Docker image:
+2. Download the "data.zip" file from [Google Drive](https://drive.google.com/file/d/1Kx87HDn-XSEu_YU5cFvs7jH2YGkJLU-w/view?usp=drive_link) and unzip it in the same directory as the Docker image(mv just move the data downloaded to the download directory to the docker_app folder that is palced in the git repository):
 
    ```bash
    cd path/to/your/download_where_data.zip
    unzip data.zip
    rm data.zip
+   mv path/to/your/download_where_data_folder/ path/to/your/downloaded_git_repository/docker_app/
    ```
 
-7. Copy the data inside the Docker image:
+3. Build the Docker image (ensure you are in the correct directory before building, the correct folder is the folder where the Dockerfile is located):
 
    ```bash
-   docker cp /your/path/to/Microbiome_piglets/docker_app/data/ CONTAINER_ID:/home/microbiome
+   cd path/to/your/downloaded_git_repository/
+   docker build -t microbiome_piglets .
    ```
 
-   - Replace `CONTAINER_ID` with the ID of the Docker container, which you can find using:
+4. Run the Docker image and attach the folder from the git repository to the Docker container (./ stay for the current directory it should be the same as git folder):
 
-      ```bash
-      docker ps
-      ```
+   ```bash
+   docker run -e PASSWORD=pass -p 8787:8787 -d -v ./:/home/microbiome microbiome_piglets
+   ```
 
-8. Run the Docker image:
+5. Run the Docker image:
 
    ```bash
    docker exec -it <container_id_or_name> /bin/bash

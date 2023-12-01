@@ -83,14 +83,15 @@ qiime feature-table filter-features \
 conda deactivate
 
 # LAUNCH R COMMAND TO NORMALIZE VIA GMPR WITH $1 AS PARAMETER
+
 if [ "$2" == "gmpr" ]; then
     echo "launching GMPR"
-    Rscript src/R/GMPR.R $1
+    Rscript docker_app/src/R/GMPR.R $1
 fi
 
 if [ "$2" == "clr" ]; then
     echo "launching clr"
-    Rscript src/R/CLR.R $1
+    Rscript docker_app/src/R/CLR.R $1
 fi
 
 source activate microbiome

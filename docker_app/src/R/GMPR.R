@@ -4,7 +4,7 @@
 library(GMPR)
 library(qiime2R)
 library(biomformat)
-source("/home/microbiome/src/R/utilities.R")
+source("/home/microbiome/docker_app/src/R/utilities.R")
 
 # Set the directory
 dir <- "/home/microbiome/data"

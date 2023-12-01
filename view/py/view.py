@@ -12,7 +12,7 @@ def display_menu(qzv_files):
 
 
 def view_qzv_interactively(
-    base_path="/home/piermarco/Documents/Thesis/docker_app/data",
+    base_path="/home/piermarco/Documents/Thesis/data",
 ):
     while True:
         # Find and show the available qzv files

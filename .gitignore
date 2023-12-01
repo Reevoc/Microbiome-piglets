@@ -2,5 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-docker_app/data/
+/data/
 view/__pycache__/

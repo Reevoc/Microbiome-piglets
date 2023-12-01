@@ -59,7 +59,7 @@ fi
 
 metadata="piglets_metadata.tsv"
 
-if ["$1" == "asv" ];then
+if [ "$1" == "asv" ];then
 #-----------------------------------------------------------------------------------------------------------
 echo "Compute ALPHA DIVERSITY ON PHYLOGENETIC-RELATED METRICS"
 mkdir -p "data/${variable_new}_${1}_${2}_phylogeny"

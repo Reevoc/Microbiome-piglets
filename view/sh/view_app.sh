@@ -1,10 +1,9 @@
 echo View app activated
 
-source /home/piermarco/miniconda3/bin/activate microbiome
-
 echo conda environment activated
 
-cd /home/piermarco/Documents/Thesis/view
+cd /home/piermarco/Documents/Thesis/view/py
+source activate qiime2-amplicon-2023.9
 
 python3 view.py
 

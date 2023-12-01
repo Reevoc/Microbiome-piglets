@@ -6,8 +6,8 @@ cd /home/microbiome
 
 source activate microbiome
 
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <taxa_type> <normalization_type> <imputation>"
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <taxa_type> <normalization_type> "
     exit 1
 fi
 
@@ -44,20 +44,6 @@ clr)
     ;;
 esac
 
-case $3 in
-st)
-    echo "Imputation type: $3"
-    ;;
-nrm)
-    echo "Imputation type: $3"
-    ;;
-lgn)
-    echo "Imputation type: $3"
-    ;;
-*)
-    echo "Invalid choice, accepted parameter values: standard imputed lgn"
-    ;;
-esac
 
 if [ "$1" == "asv" ]; then
 variable="1"
@@ -67,17 +53,6 @@ elif [ "$1" == "species" ]; then
 variable="3"
 else
 echo "Invalid choice, accepted parameter values: asv genus species"
-fi
-
-if [ "$3" == "st" ]; then
-path_imputation="3.1_feature_table_imp/feature_table_imp.qza"
-elif [ "$3" == "nrm" ]; then
-path_imputation="3.3_feature_table_imp_nrm/feature_table_imp_nrm.qza"
-elif [ "$3" == "lgn" ]; then
-path_imputation="3.2_feature_table_imp_lgn/feature_table_imp_lgn.qza"
-else
-echo "Invalid choice, accepted parameter values: standard imputed lgn"
-exit 1
 fi
 
 echo "imputation type: $imputation_type"
@@ -91,7 +66,7 @@ if [ "$1" == "asv" ]; then
 else
     echo "COLLAPSING --> $1"
     qiime taxa collapse \
-        --i-table data/$path_imputation \
+        --i-table data/3.1_feature_table_imp/feature_table_imp.qza \
         --i-taxonomy data/4_taxonomy/taxonomy.qza \
         --p-level ${pL} \
         --o-collapsed-table data/7.${variable}_$1_table/$1_table.qza
@@ -110,12 +85,12 @@ conda deactivate
 # LAUNCH R COMMAND TO NORMALIZE VIA GMPR WITH $1 AS PARAMETER
 if [ "$2" == "gmpr" ]; then
     echo "launching GMPR"
-    Rscript src/GMPR.R $1
+    Rscript src/R/GMPR.R $1
 fi
 
 if [ "$2" == "clr" ]; then
     echo "launching clr"
-    Rscript src/CLR.R $1
+    Rscript src/R/CLR.R $1
 fi
 
 source activate microbiome

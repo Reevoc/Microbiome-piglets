@@ -4,7 +4,7 @@
 library(GMPR)
 library(qiime2R)
 library(biomformat)
-source("/home/microbiome/src/utilities.R")
+source("/home/microbiome/src/R/utilities.R")
 
 # Set the directory
 dir <- "/home/microbiome/data"
@@ -15,7 +15,7 @@ taxatype <- commandArgs(TRUE)[1]
 print("GMPR normalization STARTED")
 
 # Importing
-filename_in <- paste(taxatype, "_table_norm", sep = "")
+filename_in <- paste(taxatype, "_table_taxafilt", sep = "")
 taxa_ls <- take_specific_qza(dir, filename_in)
 
 # Save the asv matrix:

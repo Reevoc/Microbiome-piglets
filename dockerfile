@@ -38,6 +38,9 @@ RUN Rscript -e 'install.packages("radian", repos = "https://cloud.r-project.org/
 
 # install python packages
 RUN pip install colorama
+RUN pip install pandas
+RUN pip install matplotlib
+RUN pip install numpy
 
 # Create the microbiome folder in the Docker image
 RUN mkdir -p /home/microbiome

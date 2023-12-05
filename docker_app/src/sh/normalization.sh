@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo START script with normalization
+echo "START script with normalization"
 
 cd /home/microbiome
 
@@ -107,4 +107,4 @@ echo "converting $1_table_norm.biom in $1_$2_table_norm.qza "
 
 conda deactivate
 
-echo STOP script
+echo "STOP script with normalization"

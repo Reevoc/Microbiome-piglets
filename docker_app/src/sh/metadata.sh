@@ -1,6 +1,8 @@
 #!/bin/bash
 
-echo "START script for the computation of alpha and beta diversity metrics"
+# https://docs.qiime2.org/2023.9/tutorials/metadata/
+
+echo "START .qzv for the metadata files"
 
 cd /home/microbiome/data/0.2_piglets_metadata/
 
@@ -11,23 +13,11 @@ fi
 
 source activate microbiome
 
-qiime tools import \
-  --type 'FeatureTable[Frequency]' \
-  --input-path ${1} \
-  --output-path ${1}.qza
-
-mkdir ./exported_${1}
-
-qiime diversity core-metrics-phylogenetic \
-    --i-table ${1}.qza \
-    --p-sampling-depth 10000 \
-    --m-metadata-file ${1} \
-    --output-dir ./exported_${1}
-
-qiime tools export \
-    --input-path ./exported_${1}/faith_pd_vector.qza \
-    --output-path ./exported_${1}/exported_faith_pd_vector
+metadata_name="${1::-4}"
 
 qiime metadata tabulate \
-    --m-input-file ./exported_${1}/exported_faith_pd_vector/faith_pd_vector.qza \
-    --o-visualization ./${1}.qzv
+    --m-input-file ./${1} \
+    --o-visualization ./${metadata_name}.qzv
+
+echo "END script for the creation of .qzv for the metadata files"
+

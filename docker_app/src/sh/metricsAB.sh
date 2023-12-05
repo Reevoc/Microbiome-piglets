@@ -4,8 +4,8 @@ echo "START script for the computation of alpha and beta diversity metrics"
 
 cd /home/microbiome/
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <taxa_type> <normalization_type>"
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 <taxa_type> <normalization_type> <path_metadata>"
     exit 1
 fi
 
@@ -57,7 +57,8 @@ else
     exit 1
 fi
 
-metadata="piglets_metadata.tsv"
+metadata="$3"
+echo "metadata: $metadata"
 
 if [ "$1" == "asv" ];then
 #-----------------------------------------------------------------------------------------------------------
@@ -230,4 +231,5 @@ qiime emperor plot \
 --o-visualization "data/${variable_new}_${1}_${2}_braycurtis_pcoa_emperor/${1}_${2}_braycurtis_pcoa_emperor.qzv"
 
 echo "BRAYCURTIS EMPEROR on $1"
-echo "STOP script"
+
+echo "STOP script for alpha and beta diversity metrics"

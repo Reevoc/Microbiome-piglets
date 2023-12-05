@@ -2,8 +2,6 @@
 # ## Libraries
 # %% Import LIbaries
 import pandas as pd
-import numpy as np
-import subprocess
 import os
 
 # %% [markdown]
@@ -11,7 +9,7 @@ import os
 
 # %%
 # TODO: change the path to work on microbiome not in local
-path_name = "/home/piermarco/Documents/Thesis/data/0.2_piglets_metadata/"
+path_name = "/home/microbiome/data/0.2_piglets_metadata/"
 
 metadta_file = os.path.join(path_name, "piglets_metadata.tsv")
 

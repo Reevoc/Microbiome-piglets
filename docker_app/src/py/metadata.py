@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Libraries
+# ## Libraries
 # %% Import LIbaries
 import pandas as pd
 import numpy as np
@@ -7,7 +7,7 @@ import subprocess
 import os
 
 # %% [markdown]
-# # Metadata
+# ## Metadata
 
 # %%
 # TODO: change the path to work on microbiome not in local
@@ -21,7 +21,7 @@ metadata = pd.DataFrame(metadata)
 
 # %%
 def save_metadata(metadata, metadata_file_name):
-    new_path_name = path_name + "modified/"
+    new_path_name = path_name
     if not os.path.exists(new_path_name):
         os.makedirs(new_path_name)
     metadata.to_csv(
@@ -30,7 +30,7 @@ def save_metadata(metadata, metadata_file_name):
 
 
 # %% [markdown]
-# ## 1) Modification metadata
+# ### 1) Modification metadata
 #
 # Add the time column [time][numerical]{0, 1, 2} --> correspoding to the time in [Animal ID] [categorical]{T0, T1, T2}
 #
@@ -69,7 +69,7 @@ for sow in metadata_animalID_sow["Animal ID"][1:]:
 
 metadata_time[1:] = metadata_animalID_sow["Animal ID"][1:].str[-2:]
 # %% [markdown]
-# ### Add the columns to the metadata
+# #### Add the columns to the metadata
 # %%
 metadata["time"] = metadata_time
 # neighboorhood already has the same shape of sow_son
@@ -78,17 +78,23 @@ metadata["sow"] = metadata_sow_mother
 
 
 # %% [markdown]
-# PERCENTAGE
-# why i am performing this study?
-# I want to see if there is a correlation between the number of piglets in the nest and the number of piglets alive.
-# the number provided in the table are just numbers, and theya are difficult to compare.
-# due to the fact a nest can be larger one can be smaller, so if I have a nest with 10 piglets and 3 dies, is not the same as a nest of 20 piglets and 3 dies.
-# so I have decided to remove some columns and substitute them with categorical one using percentage and mean calculation.
+#
+# ### 2)PERCENTAGE
+# Why am I conducting this study?
+#
+# I aim to investigate whether there is a correlation between
+# the number of piglets in the nest and the number of piglets alive.
+# The values provided in the table are merely numerical, making comparisons challenging.
+# This challenge arises from the variation in nest sizes; one nest can be larger while another smaller.
+# For instance, a nest with 10 piglets and 3 deaths is not equivalent to a nest with 20 piglets and 3 deaths.
+#
+# To address this issue, I have chosen to eliminate certain columns and replace them with categorical ones,
+# utilizing percentage and mean calculations.
 
 # %% [markdown]
-# ## 1) Study on death and alive piglets
-# I have make a proportion $ nest_{piglets} : 100 = dead_{piglets} : %dead_{piglets} $,
-# and I have divided the piglets in two groups: high-survivability and low-survivability
+# #### Study on Death and Alive Piglets
+
+# I created a proportion: $\frac{nest_{piglets}}{100} = \frac{dead_{piglets}}{dead_{percentage}}$. Then, I divided the piglets into two groups: *high-survivability* and *low-survivability*.
 
 # %%
 metadata_nest_dead = metadata[["nest", "dead"]]
@@ -109,9 +115,11 @@ metadata["survivability"] = metadata_dead
 
 
 # %% [markdown]
-# ## 2) Study on the number of piglets in the nest
-# calculate the mean of the number of piglets in the nest and divide the piglets in two groups: bigger-nest and smaller-nest
+# #### Study on the Number of Piglets in the Nest
 
+# I calculated the mean of the number of piglets in the nest and categorized the piglets into two groups: *big-nest* and *small-nest*.
+
+# %%
 metadata_nest_convert_int = metadata["nest"][1:].apply(lambda x: int(x))
 
 metadata_nest_mean = metadata_nest_convert_int.mean()
@@ -121,14 +129,14 @@ metadata_nest = metadata["swab_ID"].copy()
 
 for i in range(1, len(metadata_nest)):
     if metadata_nest_convert_int[i] < metadata_nest_mean:
-        metadata_nest[i] = "smaller-nest"
+        metadata_nest[i] = "small-nest"
     else:
-        metadata_nest[i] = "bigger-nest"
+        metadata_nest[i] = "big-nest"
 
 
 metadata["nest_size"] = metadata_nest
 # %% [markdown]
-# ## ARISING PROBLEM (Inconsistent Data)
+# ### ARISING PROBLEM (Inconsistent Data)
 #
 # There are five columns strictly correlated with the number of piglets:
 #
@@ -140,14 +148,19 @@ metadata["nest_size"] = metadata_nest
 #
 # 4. **uw_el:** Number of piglets underweight.
 #
-# 5. **transferred:** Number of piglets transferred.
+# 5. **transferred:** Number of piglets transferred T0.
 #
-# However, we can easily notice that the first three columns are correlated with time T0. Therefore, the equation is defined as follows: `nest = alive + dead`.
+# However, we can easily notice that the first three columns are correlated with time $T_0$.
+# Therefore, the equation is defined as follows: ${nest} = {alive} + {dead}$.
 #
-# In the second case, we observe that the number of piglets underweight and transferred is correlated with times T1 and T2. However, the equations are defined as follows:
+# But also the number transferred are correlated with time $T_0$.
+#
+# Instead, we don't know at which time ${uw_el}$ is referred. Could it be piglets born underweight at time $T_0$? Or could they become underweight at time $T_1$ or later?
+#
+# However, the equations are defined as follows:
 #
 # - For the new number of alive piglets: `new_alive = alive - uw_el`.
-# - For the new number of piglets in the nest: `new_nest = nest - transferred`.
+#
 #
 # The problem arises when these equations are not respected. For example, we can have the following situation:
 #
@@ -173,9 +186,10 @@ metadata["nest_size"] = metadata_nest
 # | 17        | 19       | 4      | 2           | 2      |T0      |
 #
 # %% [markdown]
-# ## 4) Study on the number of piglets eliminated due to the underweight
-# I have make a proportion $ nest_{piglets} : 100 = underweight_{piglets} : %underweight_{piglets} $,
-# and I have divided the piglets in two groups: underweight and not-underweight
+
+# #### Study on the Number of Piglets Eliminated Due to Underweight
+
+# I created a proportion: $ \frac{nest_{piglets}}{100} = \frac{underweight_{piglets}}{underweight_{percentage}}$. Then, I divided the piglets into two groups: underweight and not underweight. In this case, I only considered piglets after time $T_0$.
 
 # %%
 metadata_nest_underweight = metadata[["alive", "uw_el", "time", "transferred"]]
@@ -211,7 +225,7 @@ for i in range(1, len(metadata_dead)):
 metadata["underweight"] = metadata_dead
 
 # %% [markdown]
-# ## 5) Study on the number of piglets transferred
+# #### Study on the number of piglets transferred
 # Just bring to 0 the transferred piglets aftere time T0
 # %%
 metadata_transferred = metadata["transferred"].copy()
@@ -221,19 +235,28 @@ metadata_transferred[1:] = metadata_transferred_time[1:].apply(
     lambda x: 0 if x["time"] != "T0" else x["transferred"], axis=1
 )
 
-print(metadata_transferred.head(30))
-
 metadata["transferred"] = metadata_transferred
 
 # %% [markdown]
 # ### Drop uselss column by checking the correlation between some of the columns
+# - **rename** the $neigh$ column to $cell$.
+# - **Drop** $Animal \space ID$ defined as categorical split in $time$ and $sow$ and $sow_{son}$ the last one can also can be omitted due to the fact
+# correspond as the same as the $cell$ column.
+# - **Drop** $dead$ and $alive$ due to the fact that they are correlated with $nest$ and they seems redundant better usage of means and percentage as created before.
+# - **Drop** $swab_{ID}$ due to the fact that it is a unique identifier and it is not useful for the analysis and also are present others unique identifier.
+# - **Drop** $nest$ due to the fact that it is correlated with $dead$ and $alive$, and we calculate the difference for a big or small nest.
 
 # %%
 metadata.drop("Animal ID", axis=1, inplace=True)
+metadata.drop("swab_ID", axis=1, inplace=True)
 metadata.rename(columns={"neigh": "cell"}, inplace=True)
+save_metadata(metadata, "piglets_metadata_modified_full1.tsv")
 metadata.drop("dead", axis=1, inplace=True)
 metadata.drop("nest", axis=1, inplace=True)
-metadata.drop("swab_ID", axis=1, inplace=True)
 metadata.drop("alive", axis=1, inplace=True)
+save_metadata(metadata, "piglets_metadata_modified_neglet_some2.tsv")
+
 # %% [markdown]
-# ### Output Metadata metadata_piglets_modified1.tsv
+# ### Save the metadata
+
+# %%

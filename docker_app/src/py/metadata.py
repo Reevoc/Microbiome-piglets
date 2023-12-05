@@ -128,9 +128,9 @@ for i in range(1, len(metadata_nest)):
 
 metadata["nest_size"] = metadata_nest
 # %% [markdown]
-## ARISE PROBLEM (Inconsistent Data)
-
-# There are four columns strictly correlated with the number of piglets:
+# ## ARISING PROBLEM (Inconsistent Data)
+#
+# There are five columns strictly correlated with the number of piglets:
 #
 # 1. **nest:** Number of piglets in the nest.
 #
@@ -149,7 +149,7 @@ metadata["nest_size"] = metadata_nest
 # - For the new number of alive piglets: `new_alive = alive - uw_el`.
 # - For the new number of piglets in the nest: `new_nest = nest - transferred`.
 #
-# The problem arise here when those kind of equations are not respected. For example, we can have the following situation:
+# The problem arises when these equations are not respected. For example, we can have the following situation:
 #
 # Respected time T0:
 #
@@ -165,15 +165,13 @@ metadata["nest_size"] = metadata_nest
 # | numeric   | numeric  | numeric| numeric     | numeric|category|
 # | 23        | 19       | 4      | 2           | 2      |T1      |
 #
-# To be consistent should be like this (nest for me should be modified with alive due to the fact in metadata is specified that alive is the number of piglets alive in the nest,
-# at the birth so time T0 and the one transferred at time T0):
+# To be consistent, it should be like this (nest, for me, should be modified with alive due to the fact that in metadata it is specified that alive is the number of piglets alive in the nest at birth, so time T0, and the ones transferred at time T0):
 #
 # | nest      | alive    | dead   | transferred | uw_el  | time   |
 # |-----------|----------|--------|-------------|--------|--------|
 # | numeric   | numeric  | numeric| numeric     | numeric|category|
-# | 17       | 19       | 4      | 2           | 2      |T0      |
-
-
+# | 17        | 19       | 4      | 2           | 2      |T0      |
+#
 # %% [markdown]
 # ## 4) Study on the number of piglets eliminated due to the underweight
 # I have make a proportion $ nest_{piglets} : 100 = underweight_{piglets} : %underweight_{piglets} $,

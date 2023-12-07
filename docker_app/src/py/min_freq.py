@@ -35,7 +35,7 @@ minimum_frequency_value = minimum_frequency_tag.find_next("td").text
 minimum_frequency_value = minimum_frequency_value.replace(",", "")
 # Calculate the 90% of the minimum frequency value
 minimum_frequency_value = float(minimum_frequency_value)
-minimum_frequency_value = minimum_frequency_value * 0.9
+minimum_frequency_value = minimum_frequency_value * 0.95
 minimum_frequency_value = int(minimum_frequency_value)
 
 # save this value in a txt file

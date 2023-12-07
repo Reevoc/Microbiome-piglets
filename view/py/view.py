@@ -7,7 +7,8 @@ from utilities import find_qzv_files
 def display_menu(qzv_files):
     print("\nAvailable .qzv files:")
     for i, qzv_file in enumerate(qzv_files):
-        print(f"{Fore.CYAN}{i}.{Fore.RESET} {qzv_file}")
+        show = qzv_file.split("/")[-1]
+        print(f"{Fore.CYAN}{i}.{Fore.RESET} {show}")
     print()
 
 

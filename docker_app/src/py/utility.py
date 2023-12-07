@@ -99,30 +99,122 @@ def normalization_choice():
     return normalization_type
 
 
-def run_normalization(sh_normalization, taxa_type, normalization_type):
+def run_normalization(sh_normalization, taxa_type, normalization_type, metadata):
     try:
         if (taxa_type == "asv") or (taxa_type == "genus") or (taxa_type == "species"):
-            subprocess.run(["bash", sh_normalization, taxa_type, normalization_type])
+            subprocess.run(
+                ["bash", sh_normalization, taxa_type, normalization_type, metadata]
+            )
         else:
-            subprocess.run(["bash", sh_normalization, "asv", normalization_type])
-            subprocess.run(["bash", sh_normalization, "genus", normalization_type])
-            subprocess.run(["bash", sh_normalization, "species", normalization_type])
+            subprocess.run(
+                ["bash", sh_normalization, "asv", normalization_type, metadata]
+            )
+            subprocess.run(
+                ["bash", sh_normalization, "genus", normalization_type, metadata]
+            )
+            subprocess.run(
+                ["bash", sh_normalization, "species", normalization_type, metadata]
+            )
     except subprocess.CalledProcessError:
         print_message("\nError during normalization bash launch\n")
-    return taxa_type
+
+
+def read_min_freq_from_txt(path_to_txt):
+    with open(path_to_txt, "r") as file:
+        min_freq = file.read()
+    return min_freq
 
 
 def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
+    sh_metrics_overwrite = ""
     try:
-        if (taxa_type == "asv") or (taxa_type == "genus") or (taxa_type == "species"):
-            subprocess.run(
-                ["bash", sh_metrics, taxa_type, normalization_type, metadata]
+        if taxa_type == "asv":
+            sh_metrics_overwrite = sh_metrics + "phylogenetic-core-analysis.sh"
+            min_freq = read_min_freq_from_txt(
+                f"/home/microbiome/data/10.1_asv_{normalization_type}_table_norm/min_freq.txt"
             )
-        else:
-            subprocess.run(["bash", sh_metrics, "asv", normalization_type, metadata])
-            subprocess.run(["bash", sh_metrics, "genus", normalization_type, metadata])
             subprocess.run(
-                ["bash", sh_metrics, "species", normalization_type, metadata]
+                [
+                    "bash",
+                    sh_metrics_overwrite,
+                    taxa_type,
+                    normalization_type,
+                    metadata,
+                    min_freq,
+                ]
+            )
+        elif taxa_type == "species":
+            sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
+            min_freq = read_min_freq_from_txt(
+                f"/home/microbiome/data/10.3_species_{normalization_type}_table_norm/min_freq.txt"
+            )
+            subprocess.run(
+                [
+                    "bash",
+                    sh_metrics_overwrite,
+                    taxa_type,
+                    normalization_type,
+                    metadata,
+                    min_freq,
+                ]
+            )
+        elif taxa_type == "genus":
+            sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
+            min_freq = read_min_freq_from_txt(
+                f"/home/microbiome/data/10.2_genus_{normalization_type}_table_norm/min_freq.txt"
+            )
+            subprocess.run(
+                [
+                    "bash",
+                    sh_metrics_overwrite,
+                    taxa_type,
+                    normalization_type,
+                    metadata,
+                    min_freq,
+                ]
+            )
+        elif taxa_type == "all":
+            sh_metrics_overwrite = sh_metrics + "phylogenetic-core-analysis.sh"
+            min_freq = read_min_freq_from_txt(
+                f"/home/microbiome/data/10.1_asv_{normalization_type}_table_norm/min_freq.txt"
+            )
+            subprocess.run(
+                [
+                    "bash",
+                    sh_metrics_overwrite,
+                    "asv",
+                    normalization_type,
+                    metadata,
+                    min_freq,
+                ]
+            )
+            sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
+            min_freq = read_min_freq_from_txt(
+                f"/home/microbiome/data/10.2_genus_{normalization_type}_table_norm/min_freq.txt"
+            )
+            subprocess.run(
+                [
+                    "bash",
+                    sh_metrics_overwrite,
+                    "genus",
+                    normalization_type,
+                    metadata,
+                    min_freq,
+                ]
+            )
+            sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
+            min_freq = read_min_freq_from_txt(
+                f"/home/microbiome/data/10.3_species_{normalization_type}_table_norm/min_freq.txt"
+            )
+            subprocess.run(
+                [
+                    "bash",
+                    sh_metrics_overwrite,
+                    "species",
+                    normalization_type,
+                    metadata,
+                    min_freq,
+                ]
             )
     except subprocess.CalledProcessError:
         print_message("\nError during metrics bash launch\n")

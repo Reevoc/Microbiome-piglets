@@ -41,6 +41,7 @@ RUN pip install colorama
 RUN pip install pandas
 RUN pip install matplotlib
 RUN pip install numpy
+RUN pip install beautifulsoup4
 
 # Create the microbiome folder in the Docker image
 RUN mkdir -p /home/microbiome

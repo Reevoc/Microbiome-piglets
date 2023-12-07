@@ -6,8 +6,8 @@ cd /home/microbiome
 
 source activate microbiome
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <taxa_type> <normalization_type> "
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 <taxa_type> <normalization_type> <metadata>"
     exit 1
 fi
 
@@ -96,6 +96,7 @@ fi
 
 source activate microbiome
 cd /home/microbiome
+
 echo "converting $1_table_norm.biom in $1_$2_table_norm.qza "
 
     qiime tools import \
@@ -104,6 +105,23 @@ echo "converting $1_table_norm.biom in $1_$2_table_norm.qza "
         --input-format BIOMV100Format \
         --output-path data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qza
     echo "CONVERTED IN --> $1_$2_table_norm.qza "
+    
+echo "START create a visualization of summary stats for the table"
+
+qiime feature-table summarize \
+    --i-table data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qza \
+    --o-visualization data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qzv \
+    --m-sample-metadata-file data/0.2_piglets_metadata/$3
+
+mkdir -p data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm_export
+
+qiime tools export \
+    --input-path "data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qzv" \
+    --output-path "data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm_export/" 
+
+echo "LAUNCH python script to take min frequency from the exported table"
+cd /home/microbiome/docker_app/src/py
+python3 min_freq.py $1 $2 
 
 conda deactivate
 

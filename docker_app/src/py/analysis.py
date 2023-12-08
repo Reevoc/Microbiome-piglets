@@ -2,8 +2,9 @@ import utility
 
 sh_normalization = "/home/microbiome/docker_app/src/sh/normalization.sh"
 sh_metrics = "/home/microbiome/docker_app/src/sh/"
-metadata_folder = "/home/microbiome/data/0.2_piglets_metadata/"
 sh_metadata = "/home/microbiome/docker_app/src/sh/metadata.sh"
+sh_barplot = "/home/microbiome/docker_app/src/sh/barplot.sh"
+metadata_folder = "/home/microbiome/data/0.2_piglets_metadata/"
 metdadata_py = "/home/microbiome/docker_app/src/py/metadata.py"
 
 utility.create_metadata_files(metdadata_py)
@@ -19,3 +20,5 @@ utility.run_metadata(sh_metadata, metadata)
 utility.run_normalization(sh_normalization, taxa_type, normalization, metadata)
 
 utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
+
+utility.run_barplot(sh_barplot, normalization, metadata)

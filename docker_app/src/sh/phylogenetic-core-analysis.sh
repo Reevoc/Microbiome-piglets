@@ -57,6 +57,12 @@ qiime diversity core-metrics-phylogenetic \
 --output-dir "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic" \
 --p-sampling-depth ${sampling_depth}
 
+qiime diversity alpha-rarefaction \
+  --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
+  --i-phylogeny "data/6_tree/tree.qza" \          
+  --m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+  --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic/${1}_${2}_diversity_alpha_rerefaction.qzv" \
+  --p-max-depth 4000 
 echo  "END script for the computation of alpha and beta diversity metrics pylogenetic-related"
 
 conda deactivate

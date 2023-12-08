@@ -218,3 +218,10 @@ def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
             )
     except subprocess.CalledProcessError:
         print_message("\nError during metrics bash launch\n")
+
+
+def run_barplot(sh_barplot, normalization_type, metadata):
+    try:
+        subprocess.run(["bash", sh_barplot, normalization_type, metadata])
+    except subprocess.CalledProcessError:
+        print_message("\nError during barplot bash launch\n")

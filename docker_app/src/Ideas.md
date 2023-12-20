@@ -45,3 +45,10 @@ Here's a general approach:
     Check Minimum Sequencing Depth: Look at the sequencing depth of your samples. You can check this using the qiime feature-table summarize command on your feature table.
 
     Set Sampling Depth: Set the --p-sampling-depth parameter to a value just below the minimum sequencing depth. For example, if the minimum sequencing depth is 15,000, you might choose 10,000 as your sampling depth.
+
+
+
+
+    # Informazioni
+    - primo parto la prima volta nella stalla
+    - 

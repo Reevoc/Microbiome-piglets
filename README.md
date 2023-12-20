@@ -111,7 +111,7 @@ Follow these steps to set up the View environment:
 
    ```bash
    cd Microbiome_piglets/view
-   bash view_app.sh
+   source ./view_app.sh
    ```
 ## QIIME 2: Core Concepts
 

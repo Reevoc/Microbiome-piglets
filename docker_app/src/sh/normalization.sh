@@ -6,8 +6,8 @@ cd /home/microbiome
 
 source activate microbiome
 
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <taxa_type> <normalization_type> <metadata>"
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <taxa_type> <normalization_type> <metadata> <imputation>"
     exit 1
 fi
 
@@ -44,6 +44,9 @@ clr)
     ;;
 esac
 
+echo "Metadata: $3"
+
+echo "Imputation: $4"
 
 if [ "$1" == "asv" ]; then
 variable="1"
@@ -55,7 +58,16 @@ else
 echo "Invalid choice, accepted parameter values: asv genus species"
 fi
 
-echo "imputation type: $imputation_type"
+if [ "$4" == "feature_table_imp" ]; then
+imp="1"
+elif [ "$4" == "feature_table_imp_nrm" ]; then
+imp="3"
+elif [ "$4" == "feature_table_imp_lgn" ]; then
+imp="2"
+else
+echo "Invalid choice, accepted parameter values: feature_table_imp feature_table_imp_nrm feature_table_imp_lgn"
+fi
+
 if [ "$1" == "asv" ]; then
     echo "NO COLLAPSING --> $1_table.qza"
     qiime feature-table filter-features \
@@ -66,7 +78,7 @@ if [ "$1" == "asv" ]; then
 else
     echo "COLLAPSING --> $1"
     qiime taxa collapse \
-        --i-table data/3.1_feature_table_imp/feature_table_imp.qza \
+        --i-table data/3.${imp}_${4}/${4}.qza \
         --i-taxonomy data/4_taxonomy/taxonomy.qza \
         --p-level ${pL} \
         --o-collapsed-table data/7.${variable}_$1_table/$1_table.qza

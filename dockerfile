@@ -26,10 +26,11 @@ RUN rm qiime2-amplicon-2023.9-py38-linux-conda.yml
 # Install R package from Bioconductor
 RUN Rscript -e 'requireNamespace("BiocManager"); BiocManager::install(c("Maaslin2", "ALDEx2"));'
 
-# Install R package from cran
+# Install R packages from CRAN
 RUN install2.r --error readxl
+RUN install2.r --error compositions  # Add this line to install the compositions package
 
-# Install R packages from github
+# Install R packages from GitHub
 RUN Rscript -e 'library(devtools); install_github("lichen-lab/GMPR");'
 RUN Rscript -e 'library(devtools); install_github("jbisanz/qiime2R");'
 RUN Rscript -e 'library(devtools); install_github("ruochenj/mbImpute/mbImpute R package");'
@@ -42,6 +43,7 @@ RUN pip install pandas
 RUN pip install matplotlib
 RUN pip install numpy
 RUN pip install beautifulsoup4
-
+RUN pip install seaborn
+RUN pip install scikit-learn
 # Create the microbiome folder in the Docker image
 RUN mkdir -p /home/microbiome

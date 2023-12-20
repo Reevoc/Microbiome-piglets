@@ -13,22 +13,6 @@ fi
 
 source activate microbiome
 
-case $1 in
-asv)
-    echo "ERROR WORKING IN NON-PHYLOGENETIC ANALYSIS ON ASV LVL"
-    ;;
-genus)
-    echo "CORRECT WORKING IN NON-PHYLOGENETIC ANALYSIS ON GENUS LEVEL"
-    ;;
-species)
-    echo "CORRECT WORKING IN NON-PHYLOGENETIC ANALYSIS ON SPECIES LEVEL"
-    ;;
-*)
-    echo "Invalid choice, accepted parameter values: asv genus species"
-    exit 1
-    ;;
-esac
-
 # Compute ALPHA DIVERSITY ON NON-PHYLOGENETIC-RELATED METRICS
 if [ "$1" == "genus" ];then
 variable_new="11.2"

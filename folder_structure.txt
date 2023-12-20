@@ -1,0 +1,173 @@
+.
+├── data
+│   ├── 0.1_piglets_manifest
+│   │   └── piglets_manifest.tsv
+│   ├── 0.2_piglets_metadata
+│   │   ├── piglets_metadata_new.qzv
+│   │   ├── piglets_metadata_new.tsv
+│   │   ├── piglets_metadata.qzv
+│   │   └── piglets_metadata.tsv
+│   ├── 10.1_asv_gmpr_table_norm
+│   │   ├── asv_gmpr_table_norm.biom
+│   │   ├── asv_gmpr_table_norm.qza
+│   │   ├── asv_gmpr_table_norm.qzv
+│   │   └── min_freq.txt
+│   ├── 10.2_genus_gmpr_table_norm
+│   │   ├── genus_gmpr_table_norm.biom
+│   │   ├── genus_gmpr_table_norm.qza
+│   │   ├── genus_gmpr_table_norm.qzv
+│   │   └── min_freq.txt
+│   ├── 10.3_species_gmpr_table_norm
+│   │   ├── min_freq.txt
+│   │   ├── species_gmpr_table_norm.biom
+│   │   ├── species_gmpr_table_norm.qza
+│   │   └── species_gmpr_table_norm.qzv
+│   ├── 11.1_asv_gmpr_core_metrics_phylogenetic
+│   │   ├── bray_curtis_distance_matrix.qza
+│   │   ├── bray_curtis_emperor.qzv
+│   │   ├── bray_curtis_pcoa_results.qza
+│   │   ├── evenness_vector.qza
+│   │   ├── faith_pd_vector.qza
+│   │   ├── jaccard_distance_matrix.qza
+│   │   ├── jaccard_emperor.qzv
+│   │   ├── jaccard_pcoa_results.qza
+│   │   ├── observed_features_vector.qza
+│   │   ├── rarefied_table.qza
+│   │   ├── shannon_vector.qza
+│   │   ├── unweighted_unifrac_distance_matrix.qza
+│   │   ├── unweighted_unifrac_emperor.qzv
+│   │   ├── unweighted_unifrac_pcoa_results.qza
+│   │   ├── weighted_unifrac_distance_matrix.qza
+│   │   ├── weighted_unifrac_emperor.qzv
+│   │   └── weighted_unifrac_pcoa_results.qza
+│   ├── 11.2_genus_gmpr_core_metrics_non-phylogenetic
+│   │   ├── bray_curtis_distance_matrix.qza
+│   │   ├── bray_curtis_emperor.qzv
+│   │   ├── bray_curtis_pcoa_results.qza
+│   │   ├── evenness_vector.qza
+│   │   ├── jaccard_distance_matrix.qza
+│   │   ├── jaccard_emperor.qzv
+│   │   ├── jaccard_pcoa_results.qza
+│   │   ├── observed_features_vector.qza
+│   │   ├── rarefied_table.qza
+│   │   └── shannon_vector.qza
+│   ├── 11.3_species_gmpr_core_metrics_non-phylogenetic
+│   │   ├── bray_curtis_distance_matrix.qza
+│   │   ├── bray_curtis_emperor.qzv
+│   │   ├── bray_curtis_pcoa_results.qza
+│   │   ├── evenness_vector.qza
+│   │   ├── jaccard_distance_matrix.qza
+│   │   ├── jaccard_emperor.qzv
+│   │   ├── jaccard_pcoa_results.qza
+│   │   ├── observed_features_vector.qza
+│   │   ├── rarefied_table.qza
+│   │   └── shannon_vector.qza
+│   ├── 1_paired-end-demux
+│   │   ├── paired-end-demux.qza
+│   │   └── paired-end-demux.qzv
+│   ├── 2.1_paired-end-demux-trimmed
+│   │   ├── paired-end-demux-trimmed.qza
+│   │   └── paired-end-demux-trimmed.qzv
+│   ├── 2.2_pre_imputation
+│   │   ├── denoising_stats.qza
+│   │   ├── denoising_stats.qzv
+│   │   └── feature_sequences.qza
+│   ├── 3.1_feature_table_imp
+│   │   ├── feature_table_imp.biom
+│   │   ├── feature_table_imp.qza
+│   │   └── feature_table_imp.qzv
+│   ├── 3.2_feature_table_imp_lgn
+│   │   ├── feature_table_imp_lgn.biom
+│   │   ├── feature_table_imp_lgn.qza
+│   │   └── feature_table_imp_lgn.qzv
+│   ├── 3.3_feature_table_imp_nrm
+│   │   ├── feature_table_imp_nrm.biom
+│   │   ├── feature_table_imp_nrm.qza
+│   │   └── feature_table_imp_nrm.qzv
+│   ├── 4.1_ref-taxonomy
+│   │   └── ref-taxonomy.qza
+│   ├── 4.2_classifier
+│   │   └── classifier.qza
+│   ├── 4_taxonomy
+│   │   ├── taxonomy.qza
+│   │   └── taxonomy.qzv
+│   ├── 5_taxa_barplot
+│   │   └── taxa_barplot.qzv
+│   ├── 6_tree
+│   │   ├── tree_placements.qza
+│   │   └── tree.qza
+│   ├── 7.1_asv_table
+│   │   ├── asv_table.qza
+│   │   └── asv_table.qzv
+│   ├── 7.2_genus_table
+│   │   ├── genus_table.qza
+│   │   └── genus_table.qzv
+│   ├── 7.3_species_table
+│   │   ├── species_table.qza
+│   │   └── species_table.qzv
+│   ├── 8.1_asv_table_taxafilt
+│   │   ├── asv_table_taxafilt.qza
+│   │   └── asv_table_taxafilt.qzv
+│   ├── 8.2_genus_table_taxafilt
+│   │   ├── genus_table_taxafilt.qza
+│   │   └── genus_table_taxafilt.qzv
+│   ├── 8.3_species_table_taxafilt
+│   │   ├── species_table_taxafilt.qza
+│   │   └── species_table_taxafilt.qzv
+│   ├── 9.1_asv_table_norm
+│   │   ├── asv_table_norm.biom
+│   │   ├── asv_table_norm.qza
+│   │   └── asv_table_norm.qzv
+│   ├── 9.2_genus_table_norm
+│   │   ├── genus_table_norm.biom
+│   │   ├── genus_table_norm.qza
+│   │   └── genus_table_norm.qzv
+│   └── 9.3_species_table_norm
+│       ├── species_table_norm.biom
+│       ├── species_table_norm.qza
+│       └── species_table_norm.qzv
+├── docker_app
+│   ├── app.sh
+│   └── src
+│       ├── Ideas.md
+│       ├── py
+│       │   ├── analysis.py
+│       │   ├── metadata.py
+│       │   ├── min_freq.py
+│       │   ├── __pycache__
+│       │   │   └── utility.cpython-38.pyc
+│       │   └── utility.py
+│       ├── R
+│       │   ├── CLR.R
+│       │   ├── GMPR.R
+│       │   └── utility.R
+│       └── sh
+│           ├── barplot.sh
+│           ├── Diff_Abundances.sh
+│           ├── manually_metricsAB.sh.txt
+│           ├── metadata.sh
+│           ├── non-phylogenetic-core-analysis.sh
+│           ├── normalization.sh
+│           └── phylogenetic-core-analysis.sh
+├── dockerfile
+├── folder_structure.txt
+├── images
+│   ├── cute-pig-drawing-64.png
+│   ├── demultiplex-summary-forward.pdf
+│   ├── demultiplex-summary-forward-trim.pdf
+│   ├── demultiplex-summary-reverse.pdf
+│   ├── demultiplex-summary-reverse-trim.pdf
+│   ├── derep-denoise.png
+│   ├── Interactive-view.png
+│   └── overview.png
+├── README.md
+└── view
+    ├── py
+    │   ├── __pycache__
+    │   │   ├── utilities.cpython-310.pyc
+    │   │   └── utilities.cpython-38.pyc
+    │   ├── utilities.py
+    │   └── view.py
+    └── view_app.sh
+
+39 directories, 131 files

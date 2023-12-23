@@ -29,13 +29,14 @@ echo "metadata: $metadata"
 # Convert the sampling depth to an integer
 sampling_depth=$(printf "%.0f" "${4}")
 echo "sampling_depth: $sampling_depth"
+
 # Check if the sampling depth is a non-negative integer
 if ! [[ $sampling_depth =~ ^[0-9]+$ ]]; then
     echo "Error: Sampling depth must be a non-negative integer."
     exit 1
 fi
 
-# Perform core-metrics-phylogenetic analysis
+# Perform core-metrics analysis
 echo "Compute ALPHA and BETA DIVERSITY using core-metrics"
 
 # Remove the output directory if it already exists
@@ -45,8 +46,21 @@ qiime diversity core-metrics \
 --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
 --m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
 --output-dir "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic" \
---p-sampling-depth ${sampling_depth} 
+--p-sampling-depth ${sampling_depth}
+
+# Alpha diversity group significance analysis
+echo "Analyzing Alpha Diversity Group Significance"
+
+qiime diversity alpha-group-significance \
+--i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/faith_pd_vector.qza" \
+--m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+--o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/faith-pd-group-significance.qzv"
+
+qiime diversity alpha-group-significance \
+--i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/evenness_vector.qza" \
+--m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+--o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/evenness-group-significance.qzv"
 
 conda deactivate
 
-echo  "END script for the computation of alpha and beta diversity metrics non-pylogenetic-related"
+echo "END script for the computation of alpha and beta diversity metrics non-phylogenetic-related"

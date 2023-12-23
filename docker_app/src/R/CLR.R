@@ -2,7 +2,7 @@
 library(compositions)
 library(qiime2R)
 library(biomformat)
-source("/home/microbiome/src/utility.R")
+source("/home/microbiome/docker_app/src/R/utility.R")
 
 # Set the directory
 dir <- "/home/microbiome/data"
@@ -24,6 +24,8 @@ taxa_table_clr <- compositions::clr(taxa_table, )
 
 # create biom file in the folder :
 taxa_biom <- make_biom(taxa_table_clr)
+# If NA present convert to 0
+taxa_biom <- replace_na(taxa_biom, 0)
 
 setwd(dir)
 list_folder <- create_folder_name_and_file("10", taxatype, "clr_table_norm")

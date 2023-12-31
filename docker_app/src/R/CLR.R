@@ -25,7 +25,8 @@ taxa_table_clr <- compositions::clr(taxa_table, )
 # create biom file in the folder :
 taxa_biom <- make_biom(taxa_table_clr)
 # If NA present convert to 0
-taxa_biom <- replace_na(taxa_biom, 0)
+taxa_biom["NA"] <- 0
+
 
 setwd(dir)
 list_folder <- create_folder_name_and_file("10", taxatype, "clr_table_norm")

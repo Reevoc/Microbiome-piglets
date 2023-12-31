@@ -5,8 +5,12 @@ FROM bioconductor/bioconductor_docker:RELEASE_3_18
 RUN apt-get update && \
     apt-get install -y build-essential && \
     apt-get install -y wget && \
+    apt-get install -y zsh && \    
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Set Zsh as the default shell
+RUN chsh -s /usr/bin/zsh
 
 # Install miniconda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py38_4.12.0-Linux-x86_64.sh -O ~/miniconda.sh && \

@@ -2,6 +2,7 @@ import os
 from colorama import Fore, Style
 import subprocess
 import pandas as pd
+import csv
 
 
 def print_message(message, color=Fore.WHITE, style=Style.NORMAL):
@@ -158,7 +159,7 @@ def run_ANCOM(sh_ANCOM, normalization, metadata_file):
     find = True
     while find:
         dict_column_value = {
-            i + 1: val for i, val in enumerate(metadata_df[col_name].unique())
+            i + 1: val for i, val in enumerate(metadata_df[1:][col_name].unique())
         }
         print(dict_column_value)
         print("\n")
@@ -223,10 +224,22 @@ def run_normalization(
         print_message("\nError during normalization bash launch\n")
 
 
-def read_min_freq_from_txt(path_to_txt):
-    with open(path_to_txt, "r") as file:
-        min_freq = file.read()
-    return min_freq
+def read_frequency_data_from_csv(path_to_csv, query):
+    """
+    Reads from a csv file
+
+    Args:
+        path_to_csv (str): The path to the csv file.
+        query (str): The query to search for.
+
+    Returns:
+        int: The frequency data.
+    """
+    with open(path_to_csv, "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == query:
+                return int(row[1])
 
 
 def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
@@ -235,20 +248,22 @@ def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
         # Selecting appropriate script and minimum frequency based on taxa type
         if taxa_type == "asv":
             sh_metrics_overwrite = sh_metrics + "phylogenetic-core-analysis.sh"
-            min_freq_path = f"/home/microbiome/data/10.1_asv_{normalization_type}_table_norm/min_freq.txt"
+            frequency_data_path = f"/home/microbiome/data/10.1_asv_{normalization_type}_table_norm/frequency_data.csv"
         elif taxa_type == "species":
             sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
-            min_freq_path = f"/home/microbiome/data/10.3_species_{normalization_type}_table_norm/min_freq.txt"
+            frequency_data_path = f"/home/microbiome/data/10.3_species_{normalization_type}_table_norm/frequency_data.csv"
         elif taxa_type == "genus":
             sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
-            min_freq_path = f"/home/microbiome/data/10.2_genus_{normalization_type}_table_norm/min_freq.txt"
+            frequency_data_path = f"/home/microbiome/data/10.2_genus_{normalization_type}_table_norm/frequency_data.csv"
         elif taxa_type == "all":
             # Handle 'all' option by running for each taxa type
             for t in ["asv", "genus", "species"]:
                 run_metrics(sh_metrics, t, normalization_type, metadata)
             return
 
-        min_freq = read_min_freq_from_txt(min_freq_path)
+        frequency_data = read_frequency_data_from_csv(
+            frequency_data_path, "first quartile"
+        )
         subprocess.run(
             [
                 "bash",
@@ -256,7 +271,7 @@ def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
                 taxa_type,
                 normalization_type,
                 metadata,
-                min_freq,
+                frequency_data,
             ]
         )
     except subprocess.CalledProcessError:

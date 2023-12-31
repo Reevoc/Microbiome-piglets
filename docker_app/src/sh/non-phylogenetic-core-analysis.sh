@@ -52,15 +52,26 @@ qiime diversity core-metrics \
 echo "Analyzing Alpha Diversity Group Significance"
 
 qiime diversity alpha-group-significance \
---i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/faith_pd_vector.qza" \
+--i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/shannon_vector.qza" \
 --m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
---o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/faith-pd-group-significance.qzv"
+--o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/shannon_vector.qzv"
 
 qiime diversity alpha-group-significance \
 --i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/evenness_vector.qza" \
 --m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
---o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/evenness-group-significance.qzv"
+--o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/evenness_vector.qzv"
 
+qiime diversity alpha-group-significance \
+--i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/observed_features_vector.qza" \
+--m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+--o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/observed_features_vector.qzv"
 conda deactivate
+
+
+
+cd data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/
+
+for file in *.qzv; do mv "$file" "${1}_${2}_${file}"; done
+for file in *.qza; do mv "$file" "${1}_${2}_${file}"; done
 
 echo "END script for the computation of alpha and beta diversity metrics non-phylogenetic-related"

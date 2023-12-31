@@ -24,11 +24,10 @@ taxa_table <- taxa_ls$data
 # GMPR normalization:
 GMPR_factors <- GMPR::GMPR(OTUmatrix = as.data.frame(t(taxa_table)))
 taxa_table_norm <- t(t(taxa_table) / GMPR_factors)
+taxa_table_norm[is.na(taxa_table_norm)] <- 0
 
 # create biom file in the folder :
 taxa_biom <- make_biom(taxa_table_norm)
-# If NA present convert to 0
-taxa_biom <- replace_na(taxa_biom, 0)
 
 setwd(dir)
 list_folder <- create_folder_name_and_file("10", taxatype, "gmpr_table_norm")

@@ -10,19 +10,12 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-# %% [markdown]
-# ## TODO:
-# - [x] Time is categorical is better if it is numerical
-# Spit in 3 different metadata files for different time: DONE
-# - [x] check for wunded: DONE
-# ## Metadata
 # %%
-# path_name = "/home/piermarco/Documents/Thesis/data/0.2_piglets_metadata/"
-path_name = "/home/microbiome/data/0.2_piglets_metadata/"
+path_name = "/home/piermarco/Documents/Thesis/data/0.2_piglets_metadata/"
+# path_name = "/home/microbiome/data/0.2_piglets_metadata/"
 metadta_file = os.path.join(path_name, "piglets_metadata.tsv")
 metadata = pd.read_csv(metadta_file, sep="\t")
 metadata = pd.DataFrame(metadata)
-print(metadata.head())
 
 
 def save_metadata(metadata, metadata_file_name):
@@ -113,34 +106,34 @@ perform_pca(metadata)
 #
 #
 # %%
-metadata_animalID_sow = metadata[["Animal ID", "sow"]]
-metadata_time = metadata_animalID_sow["Animal ID"].copy()
-metadata_sow_mother_son = metadata["Animal ID"].copy()
-metadata_sow_mother = metadata["Animal ID"].copy()
 
-metadata_sow_mother_son[0] = "numeric"
-metadata_sow_mother[0] = "numeric"
-metadata_time[0] = "numeric"
+metadata_selected = metadata[["Animal ID", "sow"]].copy()
 
-for sow in metadata_animalID_sow["Animal ID"][1:]:
-    sow_mother = (sow.split("_")[0]).replace("S", "")
-    int(sow_mother)
-    metadata_sow_mother.replace(sow, sow_mother, inplace=True)
+metadata["time"] = "categorical"
+metadata["sow_child"] = "categorical"
+metadata["sow"] = "categorical"
 
-for sow in metadata_animalID_sow["Animal ID"][1:]:
-    sow_mother = (sow.split("_")[0]).replace("S", "")
-    sow_son = sow_mother + (sow.split("_")[1])[1]
-    int(sow_son)
-    metadata_sow_mother_son.replace(sow, sow_son, inplace=True)
+# Iterate over rows for processing
+for index, row in metadata_selected.iterrows():
+    if index == 0:
+        continue  # Skip the first row if it's just a header or non-data
 
-metadata_time[1:] = metadata_animalID_sow["Animal ID"][1:].str[-1:]
+    animal_id_parts = row["Animal ID"].split("_")
 
-metadata["time"] = metadata_time
-metadata["sow_child"] = metadata_sow_mother_son
-metadata["sow"] = metadata_sow_mother
+    # Extract sow, time, and sow_child from the Animal ID
+    sow_mother = animal_id_parts[0]
+    time = animal_id_parts[-1]
+    sow_son = "_".join(animal_id_parts[:2])
 
-metadata.drop("Animal ID", axis=1, inplace=True)
-metadata.drop("sow", axis=1, inplace=True)
+    # Update the new columns in metadata DataFrame
+    metadata.at[index, "time"] = time
+    metadata.at[index, "sow_child"] = sow_son
+    metadata.at[index, "sow"] = sow_mother
+
+# Drop the original 'Animal ID' and 'sow' columns
+metadata.drop(["Animal ID", "sow"], axis=1, inplace=True)
+
+
 # %% [markdown]
 #
 # ### Percentage
@@ -201,20 +194,20 @@ metadata["nest_size"] = metadata_nest
 # I created a proportion: $ \frac{nest}{100} = \frac{underweight}{underweight_{perc}}$. Then, I divided the piglets into two groups: underweight and not underweight. In this case, I only considered piglets after time $T_0$.
 
 # %%
-metadata_nest_underweight = metadata[["nest", "uw_el"]]
+metadata_nest_underweight = metadata[["weaned", "uw_el"]]
 
 perc_dead = metadata_nest_underweight[1:].apply(
-    lambda x: (int(x["uw_el"]) * 100 / (int(x["nest"]))), axis=1
+    lambda x: (int(x["uw_el"]) * 100 / (int(x["weaned"]))), axis=1
 )
 mean_dead = perc_dead.mean()
 metadata_dead = metadata["swab_ID"].copy()
 
 for i in range(1, len(metadata_dead)):
     if perc_dead[i] < mean_dead:
-        metadata_dead[i] = "UW_nest_size"
+        metadata_dead[i] = "not_UW_weaned"
     else:
-        metadata_dead[i] = "not_UW_nest_size"
-metadata["UW_nest_size"] = metadata_dead
+        metadata_dead[i] = "UW_weaned"
+metadata["UW_weaned"] = metadata_dead
 
 # %% [markdown]
 # #### Study on the number of piglets transferred
@@ -227,7 +220,20 @@ metadata_transferred[1:] = metadata_transferred_time[1:].apply(
     lambda x: 0 if x["time"] != "0" else x["transferred"], axis=1
 )
 metadata["transferred_time"] = metadata_transferred
-save_metadata(metadata, "piglets_metadata_new.tsv")
+
+metadata_weined_transferred = metadata[["weaned", "transferred_time"]]
+perc_transferred = metadata_weined_transferred[1:].apply(
+    lambda x: (int(x["transferred_time"]) * 100 / (int(x["weaned"]))), axis=1
+)
+mean_transferred = perc_transferred.mean()
+metadata_transferred = metadata["swab_ID"].copy()
+
+for i in range(1, len(metadata_transferred)):
+    if perc_transferred[i] < mean_transferred:
+        metadata_transferred[i] = "few_transferred"
+    else:
+        metadata_transferred[i] = "many_transferred"
+
 
 # %% [markdown]
 # ### ARISING PROBLEM (Inconsistent Data?)
@@ -270,16 +276,49 @@ check_weaned = (
     == metadata_new["alive"] - metadata_new["transferred"] - metadata_new["uw_el"]
 )
 
-for check in check_alive:
-    if check != True:
-        print("miss equation in check_alive")
-
-for check in check_weaned:
-    if check != True:
-        print("miss equation in check_weaned")
-
+# for check in check_alive:
+#     if check != True:
+#         print("miss equation in check_alive")
+#
+# for check in check_weaned:
+#     if check != True:
+#         print("miss equation in check_weaned")
+# %% [markdown]
+# #### Gestation to categorical
+# %%
+metadata["gestations"][0] = "categorical"
 # %% [markdown]
 # ### Drop and rename column and save the new metadata file
 # %%
 metadata.drop("swab_ID", axis=1, inplace=True)
 metadata.rename(columns={"neigh": "cell"}, inplace=True)
+metadata.drop("room", axis=1, inplace=True)
+metadata.drop("nest", axis=1, inplace=True)
+metadata.drop("dead", axis=1, inplace=True)
+metadata.drop("transferred", axis=1, inplace=True)
+metadata.drop("transferred_time", axis=1, inplace=True)
+metadata.drop("uw_el", axis=1, inplace=True)
+save_metadata(metadata, "piglets_modified_large.tsv")
+# %%
+# divide 3 metadata by time
+metadata_t0 = metadata[metadata["time"] == "T0"]
+# save_metadata(metadata_t0, "piglets_modified_t0.tsv")
+metadata_t1 = metadata[metadata["time"] == "T1"]
+# save_metadata(metadata_t1, "piglets_modified_t1.tsv")
+metadata_t2 = metadata[metadata["time"] == "T2"]
+# save_metadata(metadata_t2, "piglets_modified_t2.tsv")
+# %%
+metadata.drop("survivability", axis=1, inplace=True)
+metadata.drop("UW_weaned", axis=1, inplace=True)
+metadata.drop("nest_size", axis=1, inplace=True)
+metadata.drop("sow_child", axis=1, inplace=True)
+metadata.drop("ppt_sow", axis=1, inplace=True)
+save_metadata(metadata, "piglets_modified_small.tsv")
+# %%
+# diveded 3 metadata by time
+metadata_t0 = metadata[metadata["time"] == "T0"]
+# save_metadata(metadata_t0, "piglets_modified_t0_small.tsv")
+metadata_t1 = metadata[metadata["time"] == "T1"]
+# save_metadata(metadata_t1, "piglets_modified_t1_small.tsv")
+metadata_t2 = metadata[metadata["time"] == "T2"]
+# save_metadata(metadata_t2, "piglets_modified_t2_small.tsv")

@@ -133,7 +133,8 @@ qiime tools export \
 
 echo "LAUNCH python script to take min frequency from the exported table"
 cd /home/microbiome/docker_app/src/py
-python3 min_freq.py $1 $2 
+
+python3 frequency_data.py $1 $2 
 
 conda deactivate
 

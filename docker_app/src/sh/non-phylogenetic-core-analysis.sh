@@ -33,7 +33,6 @@ echo "sampling_depth: $sampling_depth"
 # Check if the sampling depth is a non-negative integer
 if ! [[ $sampling_depth =~ ^[0-9]+$ ]]; then
     echo "Error: Sampling depth must be a non-negative integer."
-    exit 1
 fi
 
 # Perform core-metrics analysis
@@ -66,8 +65,6 @@ qiime diversity alpha-group-significance \
 --m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
 --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/observed_features_vector.qzv"
 conda deactivate
-
-
 
 cd data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/
 

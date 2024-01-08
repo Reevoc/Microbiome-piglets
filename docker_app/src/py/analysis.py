@@ -18,20 +18,19 @@ normalization = utility.normalization_choice()
 
 taxa_type = utility.table_choice()
 
-utility.run_metadata(sh_metadata, metadata)
+# utility.run_metadata(sh_metadata, metadata)
 
-utility.run_normalization(
-    sh_normalization, taxa_type, normalization, metadata, imputation
-)
+# utility.run_normalization(
+#     sh_normalization, taxa_type, normalization, metadata, imputation
+# )
 
 # utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
 
-# TODO: ANCOM CHOICE TO MODIFY ONLY CATEOGORICAL VARIABLES
-# ancom = utility.ANCOM_choice()
+ancom = utility.ANCOM_choice()
 
-# if ancom:
-#     utility.run_ANCOM(sh_ancom, normalization, metadata)
-#
+if ancom:
+    utility.run_ANCOM(sh_ancom, normalization, metadata)
+
 # save = utility.save_analysis_performed_choice()
 #
 # if save:

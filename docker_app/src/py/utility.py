@@ -77,14 +77,20 @@ def table_choice():
 
 
 def normalization_choice():
-    options = {"1": "gmpr", "2": "clr"}
+    options = {"1": "gmpr", "2": "clr", "3": "all"}
     correct_input = False
     while not correct_input:
-        print_explanation(
-            "Normalization can be done using 2 metrics: \n 1) gmpr \n 2) clr\n"
+        print_message(
+            "If we want to use ANCOM as analysis it is suggested to perform all normalization \n"
+            + "gmpr will be used for Alpha and Beta Analysis\n"
+            + "clr for ANCOM (Further detail for the choice on the paper)\n"
         )
-        choice = input("Enter the number for normalization type: ")
+        print_explanation(
+            "Normalization can be done using 2 metrics: \n 1) gmpr \n 2) clr\n 3) all\n"
+        )
+        choice = input("Enter the number for the normalization type: ")
         normalization_type = options.get(choice)
+        print(normalization_type)
         if normalization_type:
             correct_input = True
         else:
@@ -100,9 +106,20 @@ def imputation_choice():
     }
     correct_input = False
     while not correct_input:
-        print_explanation(
-            "Imputation can be done using 3 feature tables:\n 1) feature_table_imp \n 2) feature_table_imp_nrm \n 3) feature_table_imp_lgn\n"
+        print_message(
+            "If we choose to use clr (centered log-ratio transformation), it is recommended\n"
+            + "to only use feature_table_imp. Using the other two can cause issues due to the\n"
+            + "creation of negative values in the analysis. On the other hand, GMPR (geometric\n"
+            + "mean of pairwise ratios) works well with all three types of imputation.\n"
         )
+
+        print_explanation(
+            "Imputation can be done using 3 feature tables:\n"
+            + "1) feature_table_imp \n"
+            + "2) feature_table_imp_nrm \n"
+            + "3) feature_table_imp_lgn \n"
+        )
+
         choice = input("Enter the number for the imputation type: ")
         imputation_type = options.get(choice)
         if imputation_type:
@@ -134,52 +151,86 @@ def save_analysis_performed_choice():
             print_message("\nError: Invalid choice. Please enter a valid choice.\n")
 
 
-def run_ANCOM(sh_ANCOM, normalization, metadata_file):
-    path_metadata = f"/home/microbiome/data/0.2_piglets_metadata/{metadata_file}"
-    metadata_df = pd.read_csv(path_metadata, sep="\t")
-
-    find = True
-    while find:
-        dict_columns_name = {i + 1: col for i, col in enumerate(metadata_df.columns)}
-        print(dict_columns_name)
-        print("\n")
+def choose_column_for_ancom(metadata_df):
+    """Choose the column name for ANCOM analysis."""
+    mask_categorical = metadata_df.iloc[0, :] == "categorical"
+    metadata_df = metadata_df.loc[:, mask_categorical]
+    dict_columns_name = {i + 1: col for i, col in enumerate(metadata_df.columns)}
+    print(dict_columns_name)
+    while True:
         print_explanation("Select the column name for ANCOM analysis: ")
         col_number = input("Enter the number for the column name: ")
         try:
             col_number = int(col_number)
             if col_number not in dict_columns_name:
                 raise ValueError
-            col_name = dict_columns_name[col_number]
-            find = False
+            return dict_columns_name[col_number]
         except ValueError:
             print_message(
                 "\nError: column name not valid. Please enter a valid column name.\n"
             )
 
-    find = True
-    while find:
-        dict_column_value = {
-            i + 1: val for i, val in enumerate(metadata_df[1:][col_name].unique())
-        }
-        print(dict_column_value)
-        print("\n")
-        print_explanation("Select the column value for ANCOM analysis: ")
-        value_number = input("Enter the number for the column value: ")
+
+def choose_quantile():
+    dict_quantile = {
+        "1": "min",
+        "2": "first",
+        "3": "median",
+        "4": "third",
+        "5": "max",
+        6: "mean",
+    }
+
+    while True:
+        print_explanation(
+            "Select quantile to use as frequency for excluding samples or features:\n1) min frequency \n2) first quantile\n3) median\n4) third quantile\n5) max frequency\n"
+        )
+        input_quantile = input("Enter the number for the quantile: ")
         try:
-            value_number = int(value_number)
-            if value_number not in dict_column_value:
+            if input_quantile not in dict_quantile:
                 raise ValueError
-            col_value = dict_column_value[value_number]
-            find = False
+            return input_quantile
         except ValueError:
             print_message(
-                "\nError: column value not valid. Please enter a valid column value.\n"
+                "\nError: quantile not valid. Please enter a valid quantile.\n"
             )
+
+
+def read_csv(path_csv, row_number):
+    """
+    Reads a CSV file and returns the row with the specified number.
+
+    Args:
+        path_csv (str): The path to the CSV file.
+        row_number (int): The row number to match.
+
+    Returns:
+        list: A list of the 2 elements (col_ 1 ,col_2) of the row with the specified number.
+    """
+    tuple_freq_samp = []
+    row_number = int(row_number)
+    with open(path_csv, "r") as file:
+        reader = csv.reader(file)
+        for i, row in enumerate(reader):
+            if i == row_number:
+                sample = int(float(str(row[1]).replace(",", "")))
+                feature = int(float(str(row[2]).replace(",", "")))
+                tuple_freq_samp.append((sample, feature))
+    return tuple_freq_samp
+
+
+def run_ANCOM(sh_ANCOM, normalization, metadata_file):
+    """Run ANCOM analysis."""
+    path_metadata = f"/home/microbiome/data/0.2_piglets_metadata/{metadata_file}"
+    metadata_df = pd.read_csv(path_metadata, sep="\t")
+
+    col_name = choose_column_for_ancom(metadata_df)
+    quantile_num = choose_quantile()
 
     # Running the ANCOM bash script
     try:
         subprocess.run(
-            ["bash", sh_ANCOM, col_name, col_value, normalization, metadata_file]
+            ["bash", sh_ANCOM, col_name, normalization, metadata_file, quantile_num]
         )
     except subprocess.CalledProcessError:
         print_message("\nError during ANCOM bash launch\n")
@@ -196,7 +247,37 @@ def run_normalization(
     sh_normalization, taxa_type, normalization_type, metadata, imputation
 ):
     try:
-        if (taxa_type == "asv") or (taxa_type == "genus") or (taxa_type == "species"):
+        if normalization_type == "all" and taxa_type == "all":
+            for taxa in ["asv", "genus", "species"]:
+                for norm in ["gmpr", "clr"]:
+                    subprocess.run(
+                        [
+                            "bash",
+                            sh_normalization,
+                            taxa,
+                            norm,
+                            metadata,
+                            imputation,
+                        ]
+                    )
+        elif normalization_type == "all" and taxa_type != "all":
+            for norm in ["gmpr", "clr"]:
+                subprocess.run(
+                    ["bash", sh_normalization, taxa_type, norm, metadata, imputation]
+                )
+        elif normalization_type != "all" and taxa_type == "all":
+            for taxa in ["asv", "genus", "species"]:
+                subprocess.run(
+                    [
+                        "bash",
+                        sh_normalization,
+                        taxa,
+                        normalization_type,
+                        metadata,
+                        imputation,
+                    ]
+                )
+        elif normalization_type != "all" and taxa_type != "all":
             subprocess.run(
                 [
                     "bash",
@@ -207,73 +288,48 @@ def run_normalization(
                     imputation,
                 ]
             )
-        else:
-            # Run normalization for all taxa types if 'all' is selected
-            for t in ["asv", "genus", "species"]:
-                subprocess.run(
-                    [
-                        "bash",
-                        sh_normalization,
-                        t,
-                        normalization_type,
-                        metadata,
-                        imputation,
-                    ]
-                )
     except subprocess.CalledProcessError:
         print_message("\nError during normalization bash launch\n")
 
 
-def read_frequency_data_from_csv(path_to_csv, query):
-    """
-    Reads from a csv file
-
-    Args:
-        path_to_csv (str): The path to the csv file.
-        query (str): The query to search for.
-
-    Returns:
-        int: The frequency data.
-    """
-    with open(path_to_csv, "r") as file:
-        reader = csv.reader(file)
-        for row in reader:
-            if row[0] == query:
-                return int(row[1])
-
-
 def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
-    sh_metrics_overwrite = ""
-    try:
-        # Selecting appropriate script and minimum frequency based on taxa type
-        if taxa_type == "asv":
-            sh_metrics_overwrite = sh_metrics + "phylogenetic-core-analysis.sh"
-            frequency_data_path = f"/home/microbiome/data/10.1_asv_{normalization_type}_table_norm/frequency_data.csv"
-        elif taxa_type == "species":
-            sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
-            frequency_data_path = f"/home/microbiome/data/10.3_species_{normalization_type}_table_norm/frequency_data.csv"
-        elif taxa_type == "genus":
-            sh_metrics_overwrite = sh_metrics + "non-phylogenetic-core-analysis.sh"
-            frequency_data_path = f"/home/microbiome/data/10.2_genus_{normalization_type}_table_norm/frequency_data.csv"
-        elif taxa_type == "all":
-            # Handle 'all' option by running for each taxa type
-            for t in ["asv", "genus", "species"]:
-                run_metrics(sh_metrics, t, normalization_type, metadata)
-            return
+    print_message("Choosing the quantile for the metrics analysis...")
+    quantile_num = choose_quantile()
 
-        frequency_data = read_frequency_data_from_csv(
-            frequency_data_path, "first quartile"
-        )
-        subprocess.run(
-            [
-                "bash",
-                sh_metrics_overwrite,
-                taxa_type,
-                normalization_type,
-                metadata,
-                frequency_data,
-            ]
-        )
+    print_message("Starting metrics analysis...")
+    taxa_mapping = {
+        "asv": {"script": "phylogenetic-core-analysis.sh", "data_path": "10.1_asv_"},
+        "species": {
+            "script": "non-phylogenetic-core-analysis.sh",
+            "data_path": "10.3_species_",
+        },
+        "genus": {
+            "script": "non-phylogenetic-core-analysis.sh",
+            "data_path": "10.2_genus_",
+        },
+    }
+
+    normalization_types = (
+        ["gmpr", "clr"] if normalization_type == "all" else [normalization_type]
+    )
+
+    try:
+        if taxa_type == "all":
+            for t in taxa_mapping:
+                for norm_type in normalization_types:
+                    run_metrics(sh_metrics, t, norm_type, metadata)
+        else:
+            for norm_type in normalization_types:
+                script = sh_metrics + taxa_mapping[taxa_type]["script"]
+                path = f"/home/microbiome/data/{taxa_mapping[taxa_type]['data_path']}{norm_type}_table_norm/{taxa_type}_{norm_type}_summary.csv"
+                print(path)
+                frequency_data = read_csv(path, quantile_num)
+                frequency_data = frequency_data[0][0]
+
+                subprocess.run(
+                    ["bash", script, taxa_type, norm_type, metadata, frequency_data]
+                )
+
     except subprocess.CalledProcessError:
         print_message("\nError during metrics bash launch\n")
 
@@ -291,7 +347,11 @@ def run_barplot(sh_barplot, normalization_type, metadata):
     None
     """
     try:
-        subprocess.run(["bash", sh_barplot, normalization_type, metadata])
+        if normalization_type == "all":
+            for norm in ["gmpr", "clr"]:
+                subprocess.run(["bash", sh_barplot, norm, metadata])
+        else:
+            subprocess.run(["bash", sh_barplot, normalization_type, metadata])
     except subprocess.CalledProcessError:
         print_message("\nError during barplot bash launch\n")
 

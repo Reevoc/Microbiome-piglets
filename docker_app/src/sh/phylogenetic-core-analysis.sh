@@ -23,7 +23,6 @@ echo "sampling_depth --> $sampling_depth"
 
 if ! [[ $sampling_depth =~ ^[0-9]+$ ]]; then
     echo "Error: Sampling depth must be a non-negative integer."
-    exit 1
 fi
 
 echo "metadata: $metadata"

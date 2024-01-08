@@ -1,51 +1,30 @@
-import os
+from utilities import find_qzv_files, print_tree, get_file_from_tree
+from colorama import Fore
 import subprocess
-from colorama import init, Fore
-from utilities import find_qzv_files
+import os
 
 
-def display_menu(qzv_files):
-    print("\nAvailable .qzv files:")
-    for i, qzv_file in enumerate(qzv_files):
-        show = qzv_file.split("/")[-1]
-        print(f"{Fore.CYAN}{i}.{Fore.RESET} {show}")
-    print()
-
-
-def view_qzv_interactively(
-    base_path="/home/piermarco/Documents/Thesis/data",
-):
+def view_qzv_interactively(base_path="/home/piermarco/Documents/Thesis/data"):
     while True:
-        # Find and show the available qzv files
-        qzv_files_path = find_qzv_files(base_path)
+        qzv_files_tree = find_qzv_files(base_path)
 
-        # Check if there are any qzv files
-        if not qzv_files_path:
+        if not qzv_files_tree:
             print(f"{Fore.RED}No .qzv files found in the specified path.{Fore.RESET}")
             return
 
-        # Ask the user to choose a qzv file
-        display_menu(qzv_files_path)
+        print_tree(qzv_files_tree)
         choice = input(
-            f"Enter the number of the qzv file you want to view (or '{Fore.RED}exit{Fore.RESET}' to quit): "
+            f"Enter the path to the qzv file you want to view (or 'exit' to quit): "
         )
 
         if choice.lower() == "exit":
             break
 
-        try:
-            choice = int(choice)
-            if 0 <= choice < len(qzv_files_path):
-                qzv_file = qzv_files_path[choice]
-                subprocess.run(["qiime", "tools", "view", qzv_file])
-            else:
-                print(
-                    f"{Fore.RED}Invalid choice. Please enter a valid number.{Fore.RESET}"
-                )
-        except ValueError:
-            print(
-                f"{Fore.RED}Invalid input. Please enter a number or '{Fore.RED}q{Fore.RESET}' to quit.{Fore.RESET}"
-            )
+        file_path = os.path.join(base_path, choice)
+        if os.path.exists(file_path):
+            subprocess.run(["qiime", "tools", "view", file_path])
+        else:
+            print(f"{Fore.RED}Invalid path. Please enter a valid path.{Fore.RESET}")
 
 
 if __name__ == "__main__":

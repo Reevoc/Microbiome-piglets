@@ -4,7 +4,8 @@ sh_normalization = "/home/microbiome/docker_app/src/sh/normalization.sh"
 sh_metrics = "/home/microbiome/docker_app/src/sh/"
 sh_metadata = "/home/microbiome/docker_app/src/sh/metadata.sh"
 sh_barplot = "/home/microbiome/docker_app/src/sh/barplot.sh"
-sh_ancom = "/home/microbiome/docker_app/src/sh/diff_abb.sh"
+sh_ancom = "/home/microbiome/docker_app/src/sh/diff_abb_ANCOM.sh"
+sh_maslin = "/home/microbiome/docker_app/src/sh/diff_abb_MaAsLin2.sh"
 metadata_folder = "/home/microbiome/data/0.2_piglets_metadata/"
 metdadata_py = "/home/microbiome/docker_app/src/py/metadata.py"
 
@@ -20,16 +21,21 @@ taxa_type = utility.table_choice()
 
 # utility.run_metadata(sh_metadata, metadata)
 
-# utility.run_normalization(
-#     sh_normalization, taxa_type, normalization, metadata, imputation
-# )
+utility.run_normalization(
+    sh_normalization, taxa_type, normalization, metadata, imputation
+)
 
-# utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
+utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
 
 ancom = utility.ANCOM_choice()
 
 if ancom:
     utility.run_ANCOM(sh_ancom, normalization, metadata)
+
+maslin = utility.MASLIN_choice()
+
+if maslin:
+    utility.run_maslin(sh_maslin, normalization, metadata)
 
 # save = utility.save_analysis_performed_choice()
 #

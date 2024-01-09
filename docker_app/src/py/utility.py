@@ -196,6 +196,22 @@ def choose_quantile():
             )
 
 
+def MASLIN_choice():
+    correct_input = False
+    print_message(
+        "If you want to modify random and fixed effect you can directly change the diff_abb_MaAsLin2.sh file"
+    )
+    while not correct_input:
+        print_explanation("Do you want to run MaAsLin2 in qiime2? [y/n]")
+        choice = input("Enter your choice: ")
+        if choice == "y":
+            return True
+        elif choice == "n":
+            return False
+        else:
+            print_message("\nError: Invalid choice. Please enter a valid choice.\n")
+
+
 def read_csv(path_csv, row_number):
     """
     Reads a CSV file and returns the row with the specified number.
@@ -225,15 +241,35 @@ def run_ANCOM(sh_ANCOM, normalization, metadata_file):
     metadata_df = pd.read_csv(path_metadata, sep="\t")
 
     col_name = choose_column_for_ancom(metadata_df)
-    quantile_num = choose_quantile()
+    taxa_list = ["asv", "genus", "species"]
+    for taxa in taxa_list:
+        quantile_num = choose_quantile()
+        try:
+            subprocess.run(
+                [
+                    "bash",
+                    sh_ANCOM,
+                    col_name,
+                    normalization,
+                    metadata_file,
+                    quantile_num,
+                    taxa,
+                ]
+            )
+        except subprocess.CalledProcessError:
+            print_message("\nError during ANCOM bash launch\n")
 
-    # Running the ANCOM bash script
-    try:
-        subprocess.run(
-            ["bash", sh_ANCOM, col_name, normalization, metadata_file, quantile_num]
-        )
-    except subprocess.CalledProcessError:
-        print_message("\nError during ANCOM bash launch\n")
+
+def run_MASLIN(sh_MASLIN, normalization, metadata_file):
+    """Run MaAsLin2 analysis."""
+    path_metadata = f"/home/microbiome/data/0.2_piglets_metadata/{metadata_file}"
+    metadata_df = pd.read_csv(path_metadata, sep="\t")
+    taxa_list = ["asv", "genus", "species"]
+    for taxa in taxa_list:
+        try:
+            subprocess.run(["bash", sh_MASLIN, taxa, normalization, metadata_file])
+        except subprocess.CalledProcessError:
+            print_message("\nError during MaAsLin2 bash launch\n")
 
 
 def run_metadata(sh_metadata, metadata):

@@ -24,13 +24,23 @@ def find_qzv_files(base_path):
 
 
 def print_tree(qzv_files):
+    count = -1
+    new_dict = {}
     for dir_key, files in sorted(
         qzv_files.items(), key=lambda x: natural_sort_key(x[0])
     ):
         print(f"|{Style.BRIGHT}{Fore.GREEN}{dir_key}/{Style.RESET_ALL}")
         print("|")
         for file in sorted(files, key=natural_sort_key):
-            print(f"|___________{Fore.LIGHTBLUE_EX}{file}{Style.RESET_ALL}")
+            count += 1
+            if isinstance(file, str):
+                print(
+                    f"|___________{Fore.LIGHTCYAN_EX}{count}_{Fore.LIGHTBLUE_EX}{file}{Style.RESET_ALL}"
+                )
+                new_dict[count] = []
+                new_key = f"{dir_key}/{file}"
+                new_dict[count].append(new_key)
+    return new_dict
 
 
 def extract_number(s):

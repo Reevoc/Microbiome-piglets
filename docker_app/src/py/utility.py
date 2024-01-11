@@ -5,12 +5,15 @@ import pandas as pd
 import csv
 
 
-def print_message(message, color=Fore.WHITE, style=Style.NORMAL):
+def print_message(message, color=Fore.LIGHTBLUE_EX, style=Style.NORMAL):
     print(f"{style}{color}{message}{Style.RESET_ALL}")
 
 
 def print_explanation(message, color=Fore.YELLOW, style=Style.BRIGHT):
     print_message(message, color, style)
+
+
+2
 
 
 def create_metadata_files(metadata_py):
@@ -178,7 +181,7 @@ def choose_quantile():
         "3": "median",
         "4": "third",
         "5": "max",
-        6: "mean",
+        "6": "mean",
     }
 
     while True:
@@ -212,7 +215,7 @@ def MASLIN_choice():
             print_message("\nError: Invalid choice. Please enter a valid choice.\n")
 
 
-def read_csv(path_csv, row_number):
+def read_quantile(path_csv, row_number):
     """
     Reads a CSV file and returns the row with the specified number.
 
@@ -239,25 +242,34 @@ def run_ANCOM(sh_ANCOM, normalization, metadata_file):
     """Run ANCOM analysis."""
     path_metadata = f"/home/microbiome/data/0.2_piglets_metadata/{metadata_file}"
     metadata_df = pd.read_csv(path_metadata, sep="\t")
-
     col_name = choose_column_for_ancom(metadata_df)
     taxa_list = ["asv", "genus", "species"]
-    for taxa in taxa_list:
-        quantile_num = choose_quantile()
-        try:
-            subprocess.run(
-                [
-                    "bash",
-                    sh_ANCOM,
-                    col_name,
-                    normalization,
-                    metadata_file,
-                    quantile_num,
-                    taxa,
-                ]
-            )
-        except subprocess.CalledProcessError:
-            print_message("\nError during ANCOM bash launch\n")
+    normalizations = ["gmpr", "clr"] if normalization == "all" else [normalization]
+    print_message(
+        "Attention using ANCOM with clr because ANCOM perform automatically a CLR in output\n"
+        + "so if you use clr as normalization you will have a double CLR in output.\n"
+        + "Instead is better if only check the output of ANCOM with gmpr normalization\n"
+        + "also ATTENTION to the usage of the min frequency for the quantile in Asv table\n"
+        + "cause long time of analysis"
+    )
+    for norm in normalizations:
+        for taxa in taxa_list:
+            print_message(f"ANCOM for {taxa} {norm} data")
+            quantile_num = choose_quantile()
+            try:
+                subprocess.run(
+                    [
+                        "bash",
+                        sh_ANCOM,
+                        col_name,
+                        norm,
+                        metadata_file,
+                        quantile_num,
+                        taxa,
+                    ]
+                )
+            except subprocess.CalledProcessError:
+                print_message("\nError during ANCOM bash launch\n")
 
 
 def run_MASLIN(sh_MASLIN, normalization, metadata_file):
@@ -329,43 +341,54 @@ def run_normalization(
 
 
 def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
-    print_message("Choosing the quantile for the metrics analysis...")
-    quantile_num = choose_quantile()
-
     print_message("Starting metrics analysis...")
     taxa_mapping = {
-        "asv": {"script": "phylogenetic-core-analysis.sh", "data_path": "10.1_asv_"},
+        "asv": {
+            "script": "phylogenetic-core-analysis.sh",
+            "data_path": "/home/microbiome/data/10.1_asv_",
+        },
         "species": {
             "script": "non-phylogenetic-core-analysis.sh",
-            "data_path": "10.3_species_",
+            "data_path": "/home/microbiome/data/10.3_species_",
         },
         "genus": {
             "script": "non-phylogenetic-core-analysis.sh",
-            "data_path": "10.2_genus_",
+            "data_path": "/home/microbiome/data/10.2_genus_",
         },
     }
 
+    taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
     normalization_types = (
         ["gmpr", "clr"] if normalization_type == "all" else [normalization_type]
     )
-
+    print_message(
+        f"Choose CAREFULLY the sampling depth for {taxa_types} and {normalization_types} data\n"
+        + "Based on the data extracted from the sampling\n"
+        + "I reccomand to use for:\n"
+        + "asv --> (gmpr,clr) --> (min_frequency or more, median or more)\n"
+        + "gmpr--> (gmpr,clr) --> (first quantile or more, median or more)\n"
+        + "species--> (gmpr,clr) --> (first quantile or more, median or more)\n"
+    )
     try:
-        if taxa_type == "all":
-            for t in taxa_mapping:
-                for norm_type in normalization_types:
-                    run_metrics(sh_metrics, t, norm_type, metadata)
-        else:
-            for norm_type in normalization_types:
-                script = sh_metrics + taxa_mapping[taxa_type]["script"]
-                path = f"/home/microbiome/data/{taxa_mapping[taxa_type]['data_path']}{norm_type}_table_norm/{taxa_type}_{norm_type}_summary.csv"
-                print(path)
-                frequency_data = read_csv(path, quantile_num)
-                frequency_data = frequency_data[0][0]
-
+        for taxa in taxa_types:
+            for norm in normalization_types:
+                print_message(f"Metrics for {taxa} {norm} data")
+                quantile_row = choose_quantile()
+                quantile = read_quantile(
+                    f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/{taxa}_{norm}_summary.csv",
+                    quantile_row,
+                )[0]
+                print(f"Quantile chosen: {quantile}")
                 subprocess.run(
-                    ["bash", script, taxa_type, norm_type, metadata, frequency_data]
+                    [
+                        "bash",
+                        f"{sh_metrics}{taxa_mapping[taxa]['script']}",
+                        taxa,
+                        norm,
+                        metadata,
+                        f"{quantile[0]}",
+                    ]
                 )
-
     except subprocess.CalledProcessError:
         print_message("\nError during metrics bash launch\n")
 

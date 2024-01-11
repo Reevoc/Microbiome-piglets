@@ -20,7 +20,7 @@ def create_path_csv(taxa_number, taxa_type, normalization="gmpr"):
 
 def take_information_csv(path_csv, quantile_num):
     """Take information from csv file"""
-    frequency = utility.read_csv(path_csv, quantile_num)
+    frequency = utility.read_quantile(path_csv, quantile_num)
     sample_frequency = frequency[0][0]
     feature_frequency = frequency[0][1]
     return sample_frequency, feature_frequency

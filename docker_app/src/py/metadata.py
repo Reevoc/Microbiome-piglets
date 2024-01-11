@@ -11,8 +11,8 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # %%
-path_name = "/home/piermarco/Documents/Thesis/data/0.2_piglets_metadata/"
-# path_name = "/home/microbiome/data/0.2_piglets_metadata/"
+# path_name = "/home/piermarco/Documents/Thesis/data/0.2_piglets_metadata/"
+path_name = "/home/microbiome/data/0.2_piglets_metadata/"
 metadta_file = os.path.join(path_name, "piglets_metadata.tsv")
 metadata = pd.read_csv(metadta_file, sep="\t")
 metadata = pd.DataFrame(metadata)

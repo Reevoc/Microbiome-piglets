@@ -12,7 +12,7 @@ fi
 
 source activate microbiome
 
-output=$(python /home/microbiome/docker_app/src/py/extract_csv.py $5 ${2} $4)
+output=$(python /home/microbiome/docker_app/src/py/extract_csv.py ${5} ${2} ${4})
 read sample_frequency feature_frequency <<< "$output"
 
 if [ $5 == "asv" ];then

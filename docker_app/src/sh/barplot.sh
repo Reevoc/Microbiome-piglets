@@ -19,6 +19,7 @@ new_variable="12.1"
 
 # Loop through the input tables
 mkdir -p "data/${new_variable}_${variable}_${1}_taxa_barplot"
+
 echo "Processing $input_table"
 qiime taxa barplot \
     --i-table $file_path \

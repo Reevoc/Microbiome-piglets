@@ -11,8 +11,8 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # %%
-# path_name = "/home/piermarco/Documents/Thesis/data/0.2_piglets_metadata/"
-path_name = "/home/microbiome/data/0.2_piglets_metadata/"
+path_name = "/home/piermarco/Documents/Thesis/data/0.2_piglets_metadata/"
+# path_name = "/home/microbiome/data/0.2_piglets_metadata/"
 metadta_file = os.path.join(path_name, "piglets_metadata.tsv")
 metadata = pd.read_csv(metadta_file, sep="\t")
 metadata = pd.DataFrame(metadata)
@@ -219,21 +219,6 @@ metadata_transferred_time = metadata[["time", "transferred"]]
 metadata_transferred[1:] = metadata_transferred_time[1:].apply(
     lambda x: 0 if x["time"] != "0" else x["transferred"], axis=1
 )
-metadata["transferred_time"] = metadata_transferred
-
-metadata_weined_transferred = metadata[["weaned", "transferred_time"]]
-perc_transferred = metadata_weined_transferred[1:].apply(
-    lambda x: (int(x["transferred_time"]) * 100 / (int(x["weaned"]))), axis=1
-)
-mean_transferred = perc_transferred.mean()
-metadata_transferred = metadata["swab_ID"].copy()
-
-for i in range(1, len(metadata_transferred)):
-    if perc_transferred[i] < mean_transferred:
-        metadata_transferred[i] = "few_transferred"
-    else:
-        metadata_transferred[i] = "many_transferred"
-
 
 # %% [markdown]
 # ### ARISING PROBLEM (Inconsistent Data?)
@@ -283,30 +268,25 @@ check_weaned = (
 # for check in check_weaned:
 #     if check != True:
 #         print("miss equation in check_weaned")
-# %% [markdown]
-# #### Gestation to categorical
-# %%
-metadata["gestations"][0] = "categorical"
+
 # %% [markdown]
 # ### Drop and rename column and save the new metadata file
 # %%
+
 metadata.drop("swab_ID", axis=1, inplace=True)
 metadata.rename(columns={"neigh": "cell"}, inplace=True)
 metadata.drop("room", axis=1, inplace=True)
-metadata.drop("nest", axis=1, inplace=True)
-metadata.drop("dead", axis=1, inplace=True)
-metadata.drop("transferred", axis=1, inplace=True)
-metadata.drop("transferred_time", axis=1, inplace=True)
-metadata.drop("uw_el", axis=1, inplace=True)
 save_metadata(metadata, "piglets_modified_large.tsv")
+generate_correlation_matrix(metadata)
+perform_pca(metadata)
 # %%
 # divide 3 metadata by time
 metadata_t0 = metadata[metadata["time"] == "T0"]
-# save_metadata(metadata_t0, "piglets_modified_t0.tsv")
+save_metadata(metadata_t0, "piglets_modified_time0.tsv")
 metadata_t1 = metadata[metadata["time"] == "T1"]
-# save_metadata(metadata_t1, "piglets_modified_t1.tsv")
+save_metadata(metadata_t1, "piglets_modified_time1.tsv")
 metadata_t2 = metadata[metadata["time"] == "T2"]
-# save_metadata(metadata_t2, "piglets_modified_t2.tsv")
+save_metadata(metadata_t2, "piglets_modified_time2.tsv")
 # %%
 metadata.drop("survivability", axis=1, inplace=True)
 metadata.drop("UW_weaned", axis=1, inplace=True)
@@ -314,11 +294,3 @@ metadata.drop("nest_size", axis=1, inplace=True)
 metadata.drop("sow_child", axis=1, inplace=True)
 metadata.drop("ppt_sow", axis=1, inplace=True)
 save_metadata(metadata, "piglets_modified_small.tsv")
-# %%
-# diveded 3 metadata by time
-metadata_t0 = metadata[metadata["time"] == "T0"]
-# save_metadata(metadata_t0, "piglets_modified_t0_small.tsv")
-metadata_t1 = metadata[metadata["time"] == "T1"]
-# save_metadata(metadata_t1, "piglets_modified_t1_small.tsv")
-metadata_t2 = metadata[metadata["time"] == "T2"]
-# save_metadata(metadata_t2, "piglets_modified_t2_small.tsv")

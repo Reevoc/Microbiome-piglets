@@ -69,13 +69,16 @@ echo "Invalid choice, accepted parameter values: feature_table_imp feature_table
 fi
 
 if [ "$1" == "asv" ]; then
+
     echo "NO COLLAPSING --> $1_table.qza"
+    cp data/3.${imp}_${4}/${4}.qza data/7.${variable}_$1_table/$1_table.qza
     qiime feature-table filter-features \
         --i-table data/7.${variable}_$1_table/$1_table.qza \
         --p-min-frequency 1 \
         --o-filtered-table data/8.${variable}_$1_table_taxafilt/$1_table_taxafilt.qza
 
 else
+
     echo "COLLAPSING --> $1"
     qiime taxa collapse \
         --i-table data/3.${imp}_${4}/${4}.qza \
@@ -84,13 +87,14 @@ else
         --o-collapsed-table data/7.${variable}_$1_table/$1_table.qza
     
     echo "COLLAPSED TO --> $1_table.qza" 
-fi
 
-qiime feature-table filter-features \
+    qiime feature-table filter-features \
         --i-table data/7.${variable}_$1_table/$1_table.qza \
         --p-min-frequency 1 \
         --o-filtered-table data/8.${variable}_$1_table_taxafilt/$1_table_taxafilt.qza
     echo "FILTERED TO --> $1_table_taxafilt.qza"
+
+fi
 
 conda deactivate
 

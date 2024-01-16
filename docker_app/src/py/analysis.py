@@ -13,7 +13,7 @@ metdadata_py = "/home/microbiome/docker_app/src/py/metadata.py"
     metadata files specified in the file will store them inside the
     0.2_piglets_metadata folder
 """
-utility.create_metadata_files(metdadata_py)
+# utility.create_metadata_files(metdadata_py)
 
 """
     Launch the metadata.sh script to choose one of the different
@@ -26,7 +26,7 @@ metadata = utility.metadata_choice(metadata_folder)
     for the metadata chosen by the user inside the folder 
     0.2_piglets_metadata
 """
-utility.run_metadata(sh_metadata, metadata)
+# utility.run_metadata(sh_metadata, metadata)
 
 """
     Choose the type of the imputation to use for the later normalization
@@ -35,7 +35,7 @@ utility.run_metadata(sh_metadata, metadata)
     - log_imputed
     - norm_imputed
 """
-imputation = utility.imputation_choice()
+# imputation = utility.imputation_choice()
 
 
 """
@@ -60,9 +60,9 @@ taxa_type = utility.table_choice()
     Launch the normalization.sh script to normalize the data
     with the normalization and taxatype chosen by the user
 """
-utility.run_normalization(
-    sh_normalization, taxa_type, normalization, metadata, imputation
-)
+# utility.run_normalization(
+#    sh_normalization, taxa_type, normalization, metadata, imputation
+# )
 
 """
     Launch the metrics.sh script to choose the metrics to use for the analysis
@@ -71,7 +71,7 @@ utility.run_normalization(
     - beta
     and are perforemed on phylogenetic and non-phylogenetic data
 """
-utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
+# utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
 
 """
     Decide if perform ancom analysis or not
@@ -84,7 +84,7 @@ ancom = utility.ANCOM_choice()
     during the analysis
 """
 if ancom:
-    utility.run_ANCOM(sh_ancom, normalization, metadata)
+    utility.run_ANCOM(sh_ancom, taxa_type, normalization, metadata)
 
 """
     Choose if perform MaAsLin2 analysis or not
@@ -96,7 +96,7 @@ maslin = utility.MASLIN_choice()
     TODO: add the possibility to choose the random and fixed effects
 """
 if maslin:
-    utility.run_maslin(sh_maslin, normalization, metadata)
+    utility.run_MASLIN(sh_maslin, taxa_type, normalization, metadata)
 
 # save = utility.save_analysis_performed_choice()
 #

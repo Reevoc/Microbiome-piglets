@@ -38,7 +38,7 @@ RUN install2.r --error compositions  # Add this line to install the compositions
 RUN Rscript -e 'library(devtools); install_github("lichen-lab/GMPR");'
 RUN Rscript -e 'library(devtools); install_github("jbisanz/qiime2R");'
 RUN Rscript -e 'library(devtools); install_github("ruochenj/mbImpute/mbImpute R package");'
-RUN Rscript -e 'library(devtools); install_github("stefpeschel/NetCoMi", dependencies = c("Depends", "Imports", "LinkingTo"), repos = c("https://cloud.r-project.org/",BiocManager::repositories()));'
+# RUN Rscript -e 'library(devtools); install_github("stefpeschel/NetCoMi", dependencies = c("Depends", "Imports", "LinkingTo"), repos = c("https://cloud.r-project.org/",BiocManager::repositories()));'
 RUN Rscript -e 'install.packages("radian", repos = "https://cloud.r-project.org/")'
 
 # install python packages

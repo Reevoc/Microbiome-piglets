@@ -238,19 +238,19 @@ def read_quantile(path_csv, row_number):
     return tuple_freq_samp
 
 
-def run_ANCOM(sh_ANCOM, normalization, metadata_file):
+def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     """Run ANCOM analysis."""
     path_metadata = f"/home/microbiome/data/0.2_piglets_metadata/{metadata_file}"
     metadata_df = pd.read_csv(path_metadata, sep="\t")
     col_name = choose_column_for_ancom(metadata_df)
-    taxa_list = ["asv", "genus", "species"]
+    taxa_list = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
     normalizations = ["gmpr", "clr"] if normalization == "all" else [normalization]
     print_message(
-        "Attention using ANCOM with clr because ANCOM perform automatically a CLR in output\n"
+        "ATTENTION: using ANCOM with clr, ANCOM perform automatically a CLR in output\n"
         + "so if you use clr as normalization you will have a double CLR in output.\n"
         + "Instead is better if only check the output of ANCOM with gmpr normalization\n"
-        + "also ATTENTION to the usage of the min frequency for the quantile in Asv table\n"
-        + "cause long time of analysis"
+        + "ATTENTION to the usage of the min frequency for the quantile in ASV table\n"
+        + "cause long time of analysis, for the output of .qzv file\n"
     )
     for norm in normalizations:
         for taxa in taxa_list:
@@ -272,16 +272,16 @@ def run_ANCOM(sh_ANCOM, normalization, metadata_file):
                 print_message("\nError during ANCOM bash launch\n")
 
 
-def run_MASLIN(sh_MASLIN, normalization, metadata_file):
+def run_MASLIN(sh_MASLIN, taxa_type, normalization, metadata_file):
     """Run MaAsLin2 analysis."""
-    path_metadata = f"/home/microbiome/data/0.2_piglets_metadata/{metadata_file}"
-    metadata_df = pd.read_csv(path_metadata, sep="\t")
-    taxa_list = ["asv", "genus", "species"]
-    for taxa in taxa_list:
-        try:
-            subprocess.run(["bash", sh_MASLIN, taxa, normalization, metadata_file])
-        except subprocess.CalledProcessError:
-            print_message("\nError during MaAsLin2 bash launch\n")
+    taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
+    normalizations = ["gmpr", "clr"] if normalization == "all" else [normalization]
+    for norm in normalizations:
+        for taxa in taxa_types:
+            try:
+                subprocess.run(["bash", sh_MASLIN, taxa, norm, metadata_file])
+            except subprocess.CalledProcessError:
+                print_message("\nError during MaAsLin2 bash launch\n")
 
 
 def run_metadata(sh_metadata, metadata):

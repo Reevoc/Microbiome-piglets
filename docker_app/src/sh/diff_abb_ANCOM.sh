@@ -4,7 +4,6 @@ cd /home/microbiome/
 
 echo "START script for the computation of taxa barplot"
 
-
 if [ $# -ne 5 ]; then
     echo "Usage: $0 <colum_name> <normalization> <metadata> <quantile> <taxa>"
     exit 1

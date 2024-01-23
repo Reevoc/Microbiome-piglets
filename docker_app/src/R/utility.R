@@ -16,7 +16,7 @@ take_specific_qza <- function(data_path, grep_pattern_folder, specific_qza_grep 
   for (folder in folders) {
     if (grepl(grep_pattern_folder, folder)) {
       count <- count + 1
-      print(sprintf("Folder--> %s ", folder))
+      print(sprintf("--> FOLDER %s ", folder))
       files <- list.files(folder, pattern = "*.qza", full.names = TRUE)
 
       if (count > 1) {

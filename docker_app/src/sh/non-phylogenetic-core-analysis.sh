@@ -1,8 +1,6 @@
 #!/bin/bash
 
-echo "START script for the computation of alpha and beta diversity metrics non-phylogenetic-related"
-
-source activate microbiome
+echo "--> START ALPHA AND BETA DIVERSITY METRICS NON-PHYLOGENETIC-RELATED"
 
 cd /home/microbiome/
 
@@ -11,9 +9,6 @@ if [ "$#" -ne 4 ]; then
     exit 1
 fi
 
-source activate microbiome
-
-# Compute ALPHA DIVERSITY ON NON-PHYLOGENETIC-RELATED METRICS
 if [ "$1" == "genus" ];then
 variable_new="11.2"
 variable="10.2"
@@ -22,53 +17,56 @@ variable_new="11.3"
 variable="10.3"
 fi
 
-metadata="$3"
-
-echo "metadata: $metadata"
-
-# Convert the sampling depth to an integer
+echo "--> TAXA TYPE: $1"
+echo "--> NORMALIZATION TYPE: $2"
+echo "--> METADATA: $3"
 sampling_depth=$(printf "%.0f" "${4}")
-echo "sampling_depth: $sampling_depth"
+echo "--> SAMPLING DEPTH: $sampling_depth"
 
-# Check if the sampling depth is a non-negative integer
 if ! [[ $sampling_depth =~ ^[0-9]+$ ]]; then
-    echo "Error: Sampling depth must be a non-negative integer."
+    echo "--> ERROR: Sampling depth must be a non-negative integer."
 fi
 
-# Perform core-metrics analysis
-echo "Compute ALPHA and BETA DIVERSITY using core-metrics"
+echo "--> COMPUTING ALPHA AND BETA DIVERSITY METRICS CORE METRICS NON-PHYLOGENETIC-RELATED"
 
-# Remove the output directory if it already exists
+source activate microbiome
 rm -rf "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic"
 
 qiime diversity core-metrics \
 --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
---m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+--m-metadata-file "data/0_piglets_metadata/${3}" \
 --output-dir "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic" \
 --p-sampling-depth ${sampling_depth}
 
-# Alpha diversity group significance analysis
-echo "Analyzing Alpha Diversity Group Significance"
+echo "--> ALPHA GROUP SIGNIFICANCE"
+
+# qiime diversity alpha-group-significance \
+# --i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic/faith_pd_vector.qza" \
+# --m-metadata-file "data/0_piglets_metadata/${3}" \
+# --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic/faith_pd_vector.qzv"
 
 qiime diversity alpha-group-significance \
 --i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/shannon_vector.qza" \
---m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+--m-metadata-file "data/0_piglets_metadata/${3}" \
 --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/shannon_vector.qzv"
 
 qiime diversity alpha-group-significance \
 --i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/evenness_vector.qza" \
---m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+--m-metadata-file "data/0_piglets_metadata/${3}" \
 --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/evenness_vector.qzv"
 
 qiime diversity alpha-group-significance \
 --i-alpha-diversity "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/observed_features_vector.qza" \
---m-metadata-file "data/0.2_piglets_metadata/${metadata}" \
+--m-metadata-file "data/0_piglets_metadata/${3}" \
 --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/observed_features_vector.qzv"
+
 conda deactivate
 
 cd data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/
 
+echo "--> RENAMING FILES"
+
 for file in *.qzv; do mv "$file" "${1}_${2}_${file}"; done
 for file in *.qza; do mv "$file" "${1}_${2}_${file}"; done
 
-echo "END script for the computation of alpha and beta diversity metrics non-phylogenetic-related"
+echo "--> END ALPHA AND BETA DIVERSITY METRICS NON-PHYLOGENETIC-RELATED"

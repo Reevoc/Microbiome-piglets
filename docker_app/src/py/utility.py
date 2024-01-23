@@ -240,7 +240,7 @@ def read_quantile(path_csv, row_number):
 
 def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     """Run ANCOM analysis."""
-    path_metadata = f"/home/microbiome/data/0.2_piglets_metadata/{metadata_file}"
+    path_metadata = f"/home/microbiome/data/0_piglets_metadata/{metadata_file}"
     metadata_df = pd.read_csv(path_metadata, sep="\t")
     col_name = choose_column_for_ancom(metadata_df)
     taxa_list = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
@@ -449,7 +449,7 @@ def save_analysis_performed(metadata, normalization_type, taxa_type, imputation)
         subprocess.run(
             [
                 "cp",
-                f"/home/microbiome/data/0.2_piglets_metadata/{metadata}",
+                f"/home/microbiome/data/0_piglets_metadata/{metadata}",
                 f"{base_dir}/metadata/",
             ]
         )

@@ -1,6 +1,6 @@
 import os
-import subprocess
 import re
+import subprocess
 from colorama import Fore, Style
 
 

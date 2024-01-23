@@ -2,7 +2,7 @@
 ├── data
 │   ├── 0.1_piglets_manifest
 │   │   └── piglets_manifest.tsv
-│   ├── 0.2_piglets_metadata
+│   ├── 0_piglets_metadata
 │   │   ├── piglets_metadata_new.qzv
 │   │   ├── piglets_metadata_new.tsv
 │   │   ├── piglets_metadata.qzv

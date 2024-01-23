@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 /data/
-__pycache__/
+/docker_app/src/py/__pycache__/
+/view/py/__pycache__/

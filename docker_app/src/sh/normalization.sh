@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "START script with normalization"
+echo "--> START NORMALIZATION SCRIPT"
 
 cd /home/microbiome
 
@@ -14,39 +14,40 @@ fi
 case $1 in
 species)
     pL=7
-    echo "Taxa level: $1 "
-    echo "pruning level: $pL"
+    echo "--> TAXA TYPE:$1 "
+    echo "--> PRUNING LEVEL: $pL"
     ;;
 
 genus)
     pL=6
-    echo "Taxa level: $1 "
-    echo "pruning level: $pL"
+    echo "--> TAXA TYPE: $1 "
+    echo "--> PRUNING LEVEL: $pL"
     ;;
 
 asv)
-    echo "Passed an asv, no pL to compute"
+    echo "--> TAXA TYPE: $1"
     ;;
 
 *)
-    echo "Invalid choice, accepted parameter values: asv genus species"
+    echo "--> ERROR: Invalid choice, accepted parameter values: asv genus species"
     ;;
 esac
+
 case $2 in
 gmpr)
-    echo "Normalization type: $2"
+    echo "--> NORMALIZATION: $2"
     ;;
 clr)
-    echo "Normalization type: $2"
+    echo "--> NORMALIZATION: $2"
     ;;
 *)
-    echo "Invalid choice, accepted parameter values: gmpr clr"
+    echo "--> ERROR Invalid choice, accepted parameter values: gmpr clr"
     ;;
 esac
 
-echo "Metadata: $3"
+echo "--> METADATA: $3"
 
-echo "Imputation: $4"
+echo "--> IMPUTATION: $4"
 
 if [ "$1" == "asv" ]; then
 variable="1"
@@ -55,91 +56,109 @@ variable="2"
 elif [ "$1" == "species" ]; then
 variable="3"
 else
-echo "Invalid choice, accepted parameter values: asv genus species"
+echo "--> ERROR Invalid choice, accepted parameter values: asv genus species"
 fi
 
 if [ "$4" == "feature_table_imp" ]; then
 imp="1"
 elif [ "$4" == "feature_table_imp_nrm" ]; then
-imp="3"
-elif [ "$4" == "feature_table_imp_lgn" ]; then
 imp="2"
+elif [ "$4" == "feature_table_imp_lgn" ]; then
+imp="3"
 else
 echo "Invalid choice, accepted parameter values: feature_table_imp feature_table_imp_nrm feature_table_imp_lgn"
 fi
 
+rm -rf data/7.${variable}_$1_table
+mkdir -p data/7.${variable}_$1_table
+
 if [ "$1" == "asv" ]; then
 
-    echo "NO COLLAPSING --> $1_table.qza"
+    echo "--> NO COLLAPSING $1_table.qza"
+    
     cp data/3.${imp}_${4}/${4}.qza data/7.${variable}_$1_table/$1_table.qza
-    qiime feature-table filter-features \
+
+    qiime feature-table summarize \
         --i-table data/7.${variable}_$1_table/$1_table.qza \
-        --p-min-frequency 1 \
-        --o-filtered-table data/8.${variable}_$1_table_taxafilt/$1_table_taxafilt.qza
+        --o-visualization data/7.${variable}_$1_table/$1_table.qzv \
+        --m-sample-metadata-file data/0_piglets_metadata/$3
 
 else
 
-    echo "COLLAPSING --> $1"
+    echo "--> COLLAPSING $1"
     qiime taxa collapse \
         --i-table data/3.${imp}_${4}/${4}.qza \
         --i-taxonomy data/4_taxonomy/taxonomy.qza \
         --p-level ${pL} \
         --o-collapsed-table data/7.${variable}_$1_table/$1_table.qza
-    
-    echo "COLLAPSED TO --> $1_table.qza" 
+
+    qiime feature-table summarize \
+        --i-table data/7.${variable}_$1_table/$1_table.qza \
+        --o-visualization data/7.${variable}_$1_table/$1_table.qzv \
+        --m-sample-metadata-file data/0_piglets_metadata/$3 
+fi
+
+echo "--> COLLAPSED TO $1_table.qza" 
+rm -rf data/8.${variable}_$1_table_taxafilt
+mkdir -p data/8.${variable}_$1_table_taxafilt
 
     qiime feature-table filter-features \
         --i-table data/7.${variable}_$1_table/$1_table.qza \
         --p-min-frequency 1 \
         --o-filtered-table data/8.${variable}_$1_table_taxafilt/$1_table_taxafilt.qza
-    echo "FILTERED TO --> $1_table_taxafilt.qza"
+    echo "--> FILTERED TO: $1_table_taxafilt.qza"
 
-fi
+    qiime feature-table summarize \
+        --i-table data/8.${variable}_$1_table_taxafilt/$1_table_taxafilt.qza \
+        --o-visualization data/8.${variable}_$1_table_taxafilt/$1_table_taxafilt.qzv \
+        --m-sample-metadata-file data/0_piglets_metadata/$3
 
 conda deactivate
 
-# LAUNCH R COMMAND TO NORMALIZE VIA GMPR WITH $1 AS PARAMETER
-
 if [ "$2" == "gmpr" ]; then
-    echo "launching GMPR"
+    echo "--> LAUNCHING GMPR"
     Rscript docker_app/src/R/GMPR.R $1
 fi
 
 if [ "$2" == "clr" ]; then
-    echo "launching clr"
+    echo "--> LAUNCHING CLR"
     Rscript docker_app/src/R/CLR.R $1
 fi
 
-source activate microbiome
-cd /home/microbiome
+mkdir -p data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm_export
 
-echo "converting $1_table_norm.biom in $1_$2_table_norm.qza "
+source activate microbiome
+
+echo "--> CONVERTING $1_table_norm.biom $1_$2_table_norm.qza"
 
     qiime tools import \
         --input-path data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.biom \
         --type 'FeatureTable[Frequency]' \
         --input-format BIOMV100Format \
         --output-path data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qza
-    echo "CONVERTED IN --> $1_$2_table_norm.qza "
+    echo "--> CONVERTED IN $1_$2_table_norm.qza "
     
-echo "START create a visualization of summary stats for the table"
+echo "--> SUMMARIZING $1_$2_table_norm.qza"
 
 qiime feature-table summarize \
     --i-table data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qza \
     --o-visualization data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qzv \
-    --m-sample-metadata-file data/0.2_piglets_metadata/$3
-
-mkdir -p data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm_export
+    --m-sample-metadata-file data/0_piglets_metadata/$3
 
 qiime tools export \
     --input-path "data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qzv" \
     --output-path "data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm_export/" 
 
-echo "LAUNCH python script to take min frequency from the exported table"
-cd /home/microbiome/docker_app/src/py
+echo "--> SUMMARIZED IN $1_$2_table_norm.qzv"
 
-python3 frequency_data.py $1 $2 
+cd /home/microbiome/docker_app/src/py
 
 conda deactivate
 
-echo "STOP script with normalization"
+echo "--> LAUNCH PYTHON SCRIPT FOR FREQUENCY DATA"
+
+python3 frequency_data.py $1 $2 
+
+rm -rf data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm_export
+
+echo "--> END NORMALIZATION SCRIPT"

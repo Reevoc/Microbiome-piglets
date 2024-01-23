@@ -2,12 +2,12 @@ echo View app activated
 
 echo conda environment activated
 
-cd /home/piermarco/Documents/Thesis/view/py
+cd /home/piermarco/Documents/github/microbiome_piglets/view/py
 
-conda activate qiime2-amplicon-2023.9
+# conda activate microbiome
 
 python3 view.py
 
-conda deactivate
+# conda deactivate
 
 echo View app deactivated

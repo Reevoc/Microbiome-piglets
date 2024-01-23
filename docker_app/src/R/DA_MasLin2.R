@@ -51,7 +51,7 @@ filename_in <- paste0(
     norm, "_table_norm.qza"
 )
 
-path_metadata <- paste0(dir, "/0.2_piglets_metadata/", tsv_file)
+path_metadata <- paste0(dir, "/0_piglets_metadata/", tsv_file)
 
 print("Set the directory")
 setwd(dir)

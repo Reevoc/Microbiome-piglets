@@ -2,14 +2,12 @@
 
 cd /home/microbiome/
 
-echo "START script for the computation of taxa barplot"
+echo "--> START DIFFERENTIAL ABUNDANCE ANALYSIS ANCOM"
 
 if [ $# -ne 5 ]; then
     echo "Usage: $0 <colum_name> <normalization> <metadata> <quantile> <taxa>"
     exit 1
 fi
-
-source activate microbiome
 
 output=$(python /home/microbiome/docker_app/src/py/extract_csv.py ${5} ${2} ${4})
 read sample_frequency feature_frequency <<< "$output"
@@ -27,41 +25,46 @@ fi
 [ "$sample_frequency" -eq 0 ] && sample_frequency=1
 [ "$feature_frequency" -eq 0 ] && feature_frequency=1
 
-echo "Sample Frequency: $sample_frequency"
-echo "Feature Frequency: $feature_frequency"
+echo "--> SAMPLE FREQUENCY: $sample_frequency"
+echo "--> FEATURE FREQUENCY: $feature_frequency"
 
 mkdir -p "data/13.${number}_${5}_${2}_DA_ANCOM"
+
+source activate microbiome
 
 qiime feature-table filter-samples \
 --i-table data/10.${number}_${5}_${2}_table_norm/${5}_${2}_table_norm.qza \
 --p-min-frequency $sample_frequency \
 --o-filtered-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza
 
-echo "Filtering by sample frequency --> done"
+echo "--> FILTERING BY SAMPLE FREQUENCY"
 
 qiime feature-table filter-features \
 --i-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza \
 --p-min-samples $feature_frequency \
 --o-filtered-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza
 
-echo "Filtering by feature frequency --> done"
+echo "--> FILTERING BY FEATURE FREQUENCY"
 
 qiime composition add-pseudocount \
     --i-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza \
     --o-composition-table "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qza"
-echo "Adding pseudocount --> done"
+
+echo "--> ADDING PSEUDOCOUNTS"
 
 qiime feature-table summarize \
     --i-table "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza" \
     --o-visualization "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qzv" \
-    --m-sample-metadata-file "data/0.2_piglets_metadata/$3"
+    --m-sample-metadata-file "data/0_piglets_metadata/$3"
+
+echo "--> SUMMARIZING"
 
 qiime composition ancom \
     --i-table "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qza" \
-    --m-metadata-file "data/0.2_piglets_metadata/$3" \
+    --m-metadata-file "data/0_piglets_metadata/$3" \
     --m-metadata-column ${1} \
     --p-transform-function "clr" \
     --o-visualization "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM.qzv"
 
-echo "ANCOM --> done"
+echo "--> ANCOM FINISHED"
 

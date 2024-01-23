@@ -4,7 +4,7 @@ import subprocess
 import os
 
 
-def view_qzv_interactively(base_path="/home/piermarco/Documents/Thesis/data"):
+def view_qzv_interactively(base_path="/home/piermarco/Documents/github/microbiome_piglets/data/"):
     while True:
         qzv_files_tree = find_qzv_files(base_path)
 

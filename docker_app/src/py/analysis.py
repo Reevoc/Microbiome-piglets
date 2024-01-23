@@ -6,12 +6,13 @@ sh_metadata = "/home/microbiome/docker_app/src/sh/metadata.sh"
 sh_barplot = "/home/microbiome/docker_app/src/sh/barplot.sh"
 sh_ancom = "/home/microbiome/docker_app/src/sh/diff_abb_ANCOM.sh"
 sh_maslin = "/home/microbiome/docker_app/src/sh/diff_abb_MaAsLin2.sh"
-metadata_folder = "/home/microbiome/data/0.2_piglets_metadata/"
+metadata_folder = "/home/microbiome/data/0_piglets_metadata/"
 metdadata_py = "/home/microbiome/docker_app/src/py/metadata.py"
 
-""" Launch the metadata.py script to create the different 
+""" 
+Launch the metadata.py script to create the different 
     metadata files specified in the file will store them inside the
-    0.2_piglets_metadata folder
+    0_piglets_metadata folder
 """
 # utility.create_metadata_files(metdadata_py)
 
@@ -24,7 +25,7 @@ metadata = utility.metadata_choice(metadata_folder)
 """
     Launch the run metadata.sh script to create the visualization
     for the metadata chosen by the user inside the folder 
-    0.2_piglets_metadata
+    0_piglets_metadata
 """
 # utility.run_metadata(sh_metadata, metadata)
 
@@ -35,7 +36,7 @@ metadata = utility.metadata_choice(metadata_folder)
     - log_imputed
     - norm_imputed
 """
-# imputation = utility.imputation_choice()
+imputation = utility.imputation_choice()
 
 
 """
@@ -60,9 +61,9 @@ taxa_type = utility.table_choice()
     Launch the normalization.sh script to normalize the data
     with the normalization and taxatype chosen by the user
 """
-# utility.run_normalization(
-#    sh_normalization, taxa_type, normalization, metadata, imputation
-# )
+utility.run_normalization(
+   sh_normalization, taxa_type, normalization, metadata, imputation
+)
 
 """
     Launch the metrics.sh script to choose the metrics to use for the analysis
@@ -71,7 +72,7 @@ taxa_type = utility.table_choice()
     - beta
     and are perforemed on phylogenetic and non-phylogenetic data
 """
-# utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
+utility.run_metrics(sh_metrics, taxa_type, normalization, metadata)
 
 """
     Decide if perform ancom analysis or not

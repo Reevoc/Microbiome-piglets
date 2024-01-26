@@ -33,7 +33,7 @@ mkdir -p "data/13.${number}_${5}_${2}_DA_ANCOM"
 source activate microbiome
 
 qiime feature-table filter-samples \
---i-table data/10.${number}_${5}_${2}_table_norm/${5}_${2}_table_norm.qza \
+--i-table data/3.1_feature_table_imp/feature_table_imp.qza \
 --p-min-frequency $sample_frequency \
 --o-filtered-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza
 
@@ -63,7 +63,6 @@ qiime composition ancom \
     --i-table "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qza" \
     --m-metadata-file "data/0_piglets_metadata/$3" \
     --m-metadata-column ${1} \
-    --p-transform-function "clr" \
     --o-visualization "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM.qzv"
 
 echo "--> ANCOM FINISHED"

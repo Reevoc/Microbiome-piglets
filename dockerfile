@@ -1,4 +1,3 @@
-# taken from sys biology a lot of stuff already inside
 FROM bioconductor/bioconductor_docker:RELEASE_3_18
 
 # Install base utilities
@@ -30,9 +29,6 @@ RUN wget https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2023.9-py38-lin
 # Install R package from Bioconductor
 RUN Rscript -e 'requireNamespace("BiocManager"); BiocManager::install(c("Maaslin2", "ALDEx2"));'
 
-# Install R packages from CRAN
-RUN install2.r --error readxl compositions
-
 # Install R packages from GitHub
 RUN Rscript -e 'library(devtools); install_github("lichen-lab/GMPR");' && \
     Rscript -e 'library(devtools); install_github("jbisanz/qiime2R");' && \
@@ -44,3 +40,6 @@ RUN pip install colorama pandas matplotlib numpy beautifulsoup4 seaborn scikit-l
 
 # Create the microbiome folder in the Docker image
 RUN mkdir -p /home/microbiome
+# TODO: move upper in docker file just to fast fix matrix problem of R
+# Install R packages from CRAN, including Matrix
+RUN install2.r --error readxl compositions Matrix

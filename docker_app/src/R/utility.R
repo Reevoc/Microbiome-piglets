@@ -1,5 +1,7 @@
 library(qiime2R)
 library(biomformat)
+library(tibble)
+library(dplyr)
 
 # Function to take the qza file
 #
@@ -146,3 +148,38 @@ create_folder_name_and_file <- function(number_of_folder, taxatype, folder_name)
 
   return(list(folder_name = folder_name, file_name = file_name))
 }
+filter_metadata_and_counts <- function(metadata_path, count_table_path, column_name, column_values) {
+    # Import metadata and set row names
+    metadata <- read_q2metadata(metadata_path)
+    metadata_df <- data.frame(metadata[, -1], row.names = metadata[, 1]) # Set sample ID as row names
+    metadata_df[metadata_df == ""] <- NA # Convert empty strings to NA
+
+    # Filter metadata based on column values
+    filtered_metadata_list <- list()
+    print("--> Filtering the metadata based on the column name")
+    for (value in column_values) {
+        print(paste("Filtering metadata for value", value))
+        new_metadata <- metadata_df[metadata_df[[column_name]] %in% value, ]
+        filtered_metadata_list <- append(filtered_metadata_list, list(new_metadata))
+    }
+
+    # Merge the filtered metadata
+    print("--> Merging the filtered metadata, and transforming it into a data frame")
+    filtered_metadata <- do.call(rbind, filtered_metadata_list)
+
+    # Import and transpose the count table
+    print("--> Importing the count table")
+    count_table_data <- read_qza(count_table_path) 
+    count_table <- t(count_table_data$data)
+    count_table <- as.data.frame(count_table)
+    count_table[count_table == ""] <- NA
+    sample_ids <- rownames(filtered_metadata)
+    if (!all(sample_ids %in% rownames(count_table))) {
+        stop("Some metadata sample IDs are not present in count table column names.")
+    }
+    filtered_count_table <- count_table[rownames(filtered_metadata), ]
+    print("--> Write the dataframes on the disk")
+
+    return(list("FilteredMetadata" = filtered_metadata, "FilteredCountTable" = filtered_count_table))
+}
+

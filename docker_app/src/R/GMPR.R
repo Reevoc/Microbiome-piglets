@@ -6,9 +6,6 @@ library(qiime2R)
 library(biomformat)
 source("/home/microbiome/docker_app/src/R/utility.R")
 
-# Set the directory
-dir <- "/home/microbiome/data"
-
 # Take the name of the first element given
 taxatype <- commandArgs(TRUE)[1]
 
@@ -16,6 +13,7 @@ print("GMPR normalization STARTED")
 
 # Importing
 filename_in <- paste(taxatype, "_table_taxafilt", sep = "")
+dir <- "/home/microbiome/data"
 taxa_ls <- take_specific_qza(dir, filename_in)
 
 taxa_table <- taxa_ls$data

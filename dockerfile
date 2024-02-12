@@ -43,3 +43,5 @@ RUN mkdir -p /home/microbiome
 # TODO: move upper in docker file just to fast fix matrix problem of R
 # Install R packages from CRAN, including Matrix
 RUN install2.r --error readxl compositions Matrix
+# TODO: move upper in docker file just to fast compile docker
+RUN pip install rich

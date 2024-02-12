@@ -1,6 +1,6 @@
 from utility import create_metadata_files
-from choice import metadata_choice, ANCOM_choice, table_choice, normalization_choice, imputation_choice, MASLIN_choice
-from run import run_metadata, run_normalization, run_ANCOM, run_MASLIN, run_metrics
+from choice import metadata_choice, ANCOM_choice, table_choice, normalization_choice, imputation_choice, MASLIN_choice, quality_value_choice
+from run import run_metadata, run_normalization, run_ANCOM, run_MASLIN, run_metrics, run_denoising
 
 sh_normalization = "/home/microbiome/docker_app/src/sh/normalization.sh"
 sh_metrics = "/home/microbiome/docker_app/src/sh/"
@@ -10,13 +10,14 @@ sh_ancom = "/home/microbiome/docker_app/src/sh/diff_abb_ANCOM.sh"
 sh_maslin = "/home/microbiome/docker_app/src/sh/diff_abb_MaAsLin2.sh"
 metadata_folder = "/home/microbiome/data/0_piglets_metadata/"
 metdadata_py = "/home/microbiome/docker_app/src/py/metadata.py"
+sh_denoising = "/home/microbiome/docker_app/src/sh/denoising.sh"
 
 """ 
 Launch the metadata.py script to create the different 
     metadata files specified in the file will store them inside the
     0_piglets_metadata folder
 """
-# create_metadata_files(metdadata_py)
+create_metadata_files(metdadata_py)
 
 """
     Launch the metadata.sh script to choose one of the different
@@ -29,7 +30,24 @@ metadata = metadata_choice(metadata_folder)
     for the metadata chosen by the user inside the folder 
     0_piglets_metadata
 """
-# run_metadata(sh_metadata, metadata)
+run_metadata(sh_metadata, metadata)
+
+"""
+Launch the choice for the quality value to take 
+"""
+quality_value = quality_value_choice()
+
+"""
+Run the denoising.sh script to denoise the data
+"""
+run_denoising(sh_denoising, metadata, quality_value)
+
+"""
+Launch the denoising for the imputation, we assume the that the data provided 
+before are correct this is due to the fact I don't have the file .gz
+"""
+
+run_denoising(metadata, quality_value)
 
 """
     Choose the type of the imputation to use for the later normalization
@@ -61,7 +79,7 @@ taxa_type = table_choice()
     Launch the normalization.sh script to normalize the data
     with the normalization and taxatype chosen by the user
 """
-# run_normalization(sh_normalization, taxa_type, normalization, metadata, imputation)
+run_normalization(sh_normalization, taxa_type, normalization, metadata, imputation)
 
 """
     Launch the metrics.sh script to choose the metrics to use for the analysis
@@ -71,7 +89,7 @@ taxa_type = table_choice()
     and are perforemed on phylogenetic and non-phylogenetic data
 """
 
-# run_metrics(sh_metrics, taxa_type, normalization, metadata)
+run_metrics(sh_metrics, taxa_type, normalization, metadata)
 
 
 """
@@ -98,9 +116,3 @@ maslin = MASLIN_choice()
 """
 if maslin:
     run_MASLIN(sh_maslin, taxa_type, normalization, metadata)
-
-# save = utility.save_analysis_performed_choice()
-#
-# if save:
-#     utility.run_barplot(sh_barplot, normalization, metadata)
-#     utility.save_analysis_performed(metadata, normalization, taxa_type, imputation)

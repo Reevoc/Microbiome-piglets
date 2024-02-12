@@ -4,6 +4,13 @@ from message import print_message, print_explanation
 from choice import column_for_ancom_choice, quantile_choice
 from utility import read_quantile
 
+
+def run_denoising(path_denosing_sh, metadata_file, quality_value):
+    """
+    Run the denoising the denoising
+    """
+    subprocess.run(["bash", path_denosing_sh, quality_value, metadata_file])
+    
 def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     """Run ANCOM analysis."""
     path_metadata = f"/home/microbiome/data/0_piglets_metadata/{metadata_file}"

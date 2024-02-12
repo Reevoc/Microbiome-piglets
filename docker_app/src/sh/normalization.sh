@@ -136,7 +136,7 @@ echo "--> CONVERTING $1_table_norm.biom $1_$2_table_norm.qza"
         --type 'FeatureTable[Frequency]' \
         --input-format BIOMV100Format \
         --output-path data/10.${variable}_$1_$2_table_norm/$1_$2_table_norm.qza
-    echo "--> CONVERTED IN $1_$2_table_norm.qza "
+    echo "--> CONVERTED IN $1_$2_table_norm.qza"
     
 echo "--> SUMMARIZING $1_$2_table_norm.qza"
 

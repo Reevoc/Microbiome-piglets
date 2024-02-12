@@ -1,5 +1,8 @@
 import os
+import subprocess
 from message import print_message, print_explanation
+from rich_table_display import display_csv_summary_with_rich
+from extract_information import eliminate_folder, path_directory_of_qzv
 
 def metadata_choice(metadata_folder):
     correct_input = False
@@ -191,3 +194,51 @@ def MASLIN_choice():
             return False
         else:
             print_message("\nError: Invalid choice. Please enter a valid choice.\n")
+
+def quality_value_choice():
+    print_message("Decide the quality value choice to generate, fist of all we share\n" +
+                  "some data")
+    list = [15, 20, 25]
+    path_quality_script = "/home/microbiome/docker_app/src/py/quality_control.py"
+    
+    for quality in list: 
+        subprocess.run(["python3", path_quality_script, "-q ", quality])
+        display_csv_summary_with_rich(f"/home/microbiome/data/2_paired-end-demux-trimmed/quality_threshold_50%_{quality}.csv")
+    
+    file = "empty"
+    while file != None:
+        directory = path_directory_of_qzv("/home/microbiome/data/2_paired-end-demux-trimmed")
+        file = eliminate_folder(directory, "/home/microbiome/data/2_paired-end-demux-trimmed")
+        if file == None:
+            break
+        
+    correct_input = False
+    dict_quality = {1: "15",
+                    2: "20",
+                    3: "25",}
+    
+    while not correct_input:
+        print_explanation("which quality value do you want to use?\n"+
+                            "1) 15\n"+
+                            "2) 20\n"+
+                            "3) 25\n")
+        quality = input("Enter the choice:")
+        try: 
+            if quality not in dict_quality:
+                raise ValueError
+            else:
+                quality_value = dict_quality[quality]
+                quality_value = int(quality_value)
+                return quality_value
+        except ValueError:
+            print_message("The value insert is incorrect retry")
+            
+
+            
+
+    
+         
+        
+                
+    
+    

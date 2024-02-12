@@ -33,6 +33,7 @@ source activate microbiome
 rm -rf "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic"
 
 qiime diversity core-metrics \
+# freature table qza imputate 
 --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
 --m-metadata-file "data/0_piglets_metadata/${3}" \
 --output-dir "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic" \

@@ -9,7 +9,8 @@ def run_denoising(path_denosing_sh, metadata_file, quality_value):
     """
     Run the denoising the denoising
     """
-    subprocess.run(["bash", path_denosing_sh, quality_value, metadata_file])
+    print(f"bash {path_denosing_sh} {quality_value} {metadata_file}")
+    subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file])
     
 def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     """Run ANCOM analysis."""

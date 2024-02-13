@@ -2,7 +2,7 @@ import os
 import subprocess
 from message import print_message, print_explanation
 from rich_table_display import display_csv_summary_with_rich
-from extract_information import eliminate_folder, path_directory_of_qzv
+from utility import eliminate_folder
 
 def metadata_choice(metadata_folder):
     correct_input = False
@@ -201,21 +201,14 @@ def quality_value_choice():
     list = [15, 20, 25]
     path_quality_script = "/home/microbiome/docker_app/src/py/quality_control.py"
     
-    for quality in list: 
-        subprocess.run(["python3", path_quality_script, "-q ", quality])
+    for quality in list:
+        subprocess.run(["python", path_quality_script, "-q", str(quality)])
         display_csv_summary_with_rich(f"/home/microbiome/data/2_paired-end-demux-trimmed/quality_threshold_50%_{quality}.csv")
     
-    file = "empty"
-    while file != None:
-        directory = path_directory_of_qzv("/home/microbiome/data/2_paired-end-demux-trimmed")
-        file = eliminate_folder(directory, "/home/microbiome/data/2_paired-end-demux-trimmed")
-        if file == None:
-            break
-        
     correct_input = False
-    dict_quality = {1: "15",
-                    2: "20",
-                    3: "25",}
+    dict_quality = {"1": 15,
+                    "2": 20,
+                    "3": 25,}
     
     while not correct_input:
         print_explanation("which quality value do you want to use?\n"+

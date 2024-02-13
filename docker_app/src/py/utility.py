@@ -1,5 +1,6 @@
 import subprocess
 import csv
+import glob
 import os
 from message import print_message, print_explanation
 
@@ -127,3 +128,10 @@ def save_analysis_performed(metadata, normalization_type, taxa_type, imputation)
 
     except Exception as e:
         print_message(f"\nError during creation of folder or file copying: {e}\n")
+
+def eliminate_folder(base_path):
+    data_path = os.path.join(base_path)
+    folders = glob.glob(data_path + "/*")
+    for folder in folders:
+        subprocess.run(["rm", "-rf", folder])
+        

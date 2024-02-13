@@ -2,7 +2,7 @@
 
 cd /home/microbiome
 
-conda activate microbiome
+source activate microbiome
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <quality_value> <metadata>"
@@ -11,13 +11,13 @@ fi
 
 echo "--> START DENOISING"
 
-quality_file="data/2_paired-end-demux-trimming/quality_threshold_50%_${1}.csv"
+quality_file="data/2_paired-end-demux-trimmed/quality_threshold_50%_${1}.csv"
 if [ -f "$quality_file" ]; then
     while IFS=, read -r key value
     do
-        if [ "$key" = "forward" ]; then
+        if [[ "$key" == "forward"* ]]; then
             forward=$value
-        elif [ "$key" = "reverse" ]; then
+        elif [[ "$key" == "reverse"* ]]; then
             reverse=$value
         fi
     done < "$quality_file"
@@ -26,10 +26,11 @@ else
     exit 1
 fi
 
-echo "metadata --> ${2}"f
+echo "metadata --> ${2}"
 echo "quality value --> ${1}"
 echo "forward value for quality ${1} --> $forward"
-echo "revere value for quality ${1} --> $reverse"
+echo "reverse value for quality ${1} --> $reverse"
+
 
 qiime dada2 denoise-paired \
   --i-demultiplexed-seqs data/2_paired-end-demux-trimmed/paired-end-demux-trimmed.qza \
@@ -60,11 +61,11 @@ echo "--> END DENOISING"
 
 echo "--> START IMPUTATION"
 cd /home/microbiome/docker_app/src/R
-Rscript "${2}"
+Rscript mBImpute.R $2 
 
 echo "--> END IMPUTATION"
 
-conda activate microbiomecovid
+source activate microbiome
 
 echo "--> CONVERTING .BIOM TO .QZA"
 
@@ -102,6 +103,8 @@ qiime feature-table summarize \
   --i-table data/3.3_feature_table_imp_lng/feature_table_imp_lng.qza \
   --o-visualization data/3.3_feature_table_imp_lng/feature_table_imp_lng.qzv \
   --m-sample-metadata-file "data/0_piglets_metadata/${2}.tsv"
+
+conda deactivate
 
 
 

@@ -1,17 +1,44 @@
 import subprocess
+import zipfile
 import pandas as pd
 from message import print_message, print_explanation
 from choice import column_for_ancom_choice, quantile_choice
 from utility import read_quantile
+from plot_csv import plot_feature_table_3d_histogram, create_heatmap
+import os
+import glob
 
 
 def run_denoising(path_denosing_sh, metadata_file, quality_value):
     """
     Run the denoising the denoising
     """
+    try:
+        with zipfile.ZipFile("/home/microbiome/data/6_tree/tree.qza", 'r') as zip_ref:
+            try:
+                zip_ref.extractall("/home/microbiome/data/6_tree/tree")
+            except FileExistsError:
+                print_message("tree.qza already unzipped")
+    except FileNotFoundError:
+        raise FileNotFoundError("tree.qza not found")
     print(f"bash {path_denosing_sh} {quality_value} {metadata_file}")
     subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file])
-    
+    choice = input("Do you want create plot for the different count of sequences? [y/n]")
+    path_data = "/home/microbiome/data/"
+    if choice == "y":
+        path_row = f"{path_data}3_feature_tables/feature_table.csv"
+        path_imputed = f"{path_data}3.1_feature_table_imp/feature_table_imp.csv"
+        path_imputed_nrm = f"{path_data}3.2_feature_table_imp_nrm/feature_table_imp_nrm.csv"
+        path_imputed_lgn = f"{path_data}3.3_feature_table_imp_lgn/feature_table_imp_lgn.csv"
+        for path in [path_row, path_imputed, path_imputed_nrm, path_imputed_lgn]:
+            if os.path.exists(path):
+                print(f"Creating 3D histogram for {path}")
+                df = pd.read_csv(path)
+                plot_feature_table_3d_histogram(df, f"images/3D_histogram_{os.path.basename(path)}.png")
+            if path != path_row:
+                print(f"Creating heatmap for {path}")
+                create_heatmap(path_row, path, f"images/heatmap_{os.path.basename(path)}.png")
+        
 def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     """Run ANCOM analysis."""
     path_metadata = f"/home/microbiome/data/0_piglets_metadata/{metadata_file}"

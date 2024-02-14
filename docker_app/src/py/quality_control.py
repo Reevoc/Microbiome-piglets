@@ -16,9 +16,9 @@ def plot_quality_control(tsv, name):
     second_quality_scores = tsv.loc[tsv['Unnamed: 0'] == '2%'].drop('Unnamed: 0', axis=1).squeeze()
     nineth_quality_scores = tsv.loc[tsv['Unnamed: 0'] == '9%'].drop('Unnamed: 0', axis=1).squeeze()
     twentyfifth_quality_scores = tsv.loc[tsv['Unnamed: 0'] == '25%'].drop('Unnamed: 0', axis=1).squeeze()
-    twenty = np.full(301, 20)
-    fiftheen = np.full(301, 15)
-    twentyfive = np.full(301, 25)
+    twenty = np.full(280, 20)
+    fiftheen = np.full(280, 15)
+    twentyfive = np.full(280, 25)
     plt.figure(figsize=(12, 6))
     plt.plot(second_quality_scores, label='2% Percentile', color='red')
     plt.plot(nineth_quality_scores, label='9% Percentile', color='green')
@@ -30,6 +30,8 @@ def plot_quality_control(tsv, name):
     plt.title('Quality Plot of Sequencing Reads - ' + name)
     plt.xlabel('Position in Read')
     plt.ylabel('Median Quality Score')
+    tick_interval = 20 
+    plt.xticks(np.arange(0, len(median_quality_scores) + 1, tick_interval))
     plt.legend(loc='lower left')
     plt.savefig(f'/home/microbiome/data/2_paired-end-demux-trimmed/{name}_quality_plot.png')
 
@@ -46,29 +48,24 @@ def find_latest_directory(base_path):
     dirs.sort(reverse=True)
     return dirs[0] if dirs else None
 
-def create_quality_threshold(tsv, percentile, quality_threshold, file, csv_file_path, overwrite=False):
-    # Calculate the median values below the quality threshold
+def create_quality_threshold(tsv, percentile, quality_threshold, file, overwrite=False):
     median_values = tsv.loc[tsv['Unnamed: 0'] == f'{percentile}'].drop('Unnamed: 0', axis=1).squeeze()
-    median_values = np.asarray(median_values)
-    median_values_below_threshold = median_values[:] < quality_threshold
-    sum_below_threshold = np.count_nonzero(median_values_below_threshold)
-
-    # Determine forward or reverse from the file name
-    for_or_back = file.split('-')[0]
-
-    # Read the other CSV file to get the value from the specified position
-    other_csv_data = pd.read_csv(csv_file_path)
-    row_index = len(other_csv_data) - sum_below_threshold
-    if for_or_back == 'forward':
-        value_from_other_csv = other_csv_data.iloc[row_index, 1] 
-    elif for_or_back == 'reverse':
-        value_from_other_csv = other_csv_data.iloc[row_index, 2]
-
+    median_values = median_values.to_numpy()
+    right_trim = len(median_values) - 1 
+    left_trim = 0  
+    for i in range(len(median_values)):
+        if median_values[i] < quality_threshold:
+            right_trim = i
+            break
+    for i in range(len(median_values)):
+        if median_values[i] > quality_threshold:
+            left_trim = i
+            break
     output_file = f'/home/microbiome/data/2_paired-end-demux-trimmed/quality_threshold_{percentile}_{quality_threshold}.csv'
     with open(output_file, 'a' if not overwrite else 'w') as f:
         if overwrite:
-            f.write('File, Count Below Threshold, Value From Other CSV\n')
-        f.write(f'{file}, {sum_below_threshold}, {value_from_other_csv}\n')
+            f.write(f'File quality threshold {quality_threshold}, Left Trim, Right Trim\n')
+        f.write(f'{file}, {str(left_trim)}, {str(right_trim)}\n')
 
 def main():
     args = sys.argv[1:]
@@ -83,7 +80,7 @@ def main():
             print('Error: Quality value must be an integer')
             sys.exit(1)
 
-    base_path = '/home/microbiome/data/1_paired-end-demux/'
+    base_path = '/home/microbiome/data/2_paired-end-demux-trimmed/'
     
     extract_qzv_files(base_path)
 
@@ -98,7 +95,7 @@ def main():
                 tsv = find_tsv_quality_control(tsv_path)
                 plot_quality_control(tsv, os.path.splitext(file)[0])
                 create_quality_threshold(tsv, '50%', quality_value, os.path.splitext(file)[0], overwrite)
-                overwrite = False  # Set to False after the first iteration
+                overwrite = False  
         subprocess.run(["rm", "-rf", os.path.join(base_path, latest_dir)])
     else:
         print('Error: Could not find the latest directory')

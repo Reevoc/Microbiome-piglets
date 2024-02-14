@@ -17,7 +17,7 @@ Launch the metadata.py script to create the different
     metadata files specified in the file will store them inside the
     0_piglets_metadata folder
 """
-create_metadata_files(metdadata_py)
+# create_metadata_files(metdadata_py)
 
 """
     Launch the metadata.sh script to choose one of the different
@@ -30,7 +30,7 @@ metadata = metadata_choice(metadata_folder)
     for the metadata chosen by the user inside the folder 
     0_piglets_metadata
 """
-run_metadata(sh_metadata, metadata)
+# run_metadata(sh_metadata, metadata)
 
 """
 Launch the choice for the quality value to take 
@@ -41,13 +41,6 @@ quality_value = quality_value_choice()
 Run the denoising.sh script to denoise the data
 """
 run_denoising(sh_denoising, metadata, quality_value)
-
-"""
-Launch the denoising for the imputation, we assume the that the data provided 
-before are correct this is due to the fact I don't have the file .gz
-"""
-
-run_denoising(metadata, quality_value)
 
 """
     Choose the type of the imputation to use for the later normalization

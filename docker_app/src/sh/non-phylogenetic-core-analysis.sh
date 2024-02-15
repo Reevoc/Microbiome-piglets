@@ -10,11 +10,11 @@ if [ "$#" -ne 4 ]; then
 fi
 
 if [ "$1" == "genus" ];then
-variable_new="11.2"
-variable="10.2"
+variable_new="7.2"
+variable="6.2"
 elif [ "$1" == "species" ];then
-variable_new="11.3"
-variable="10.3"
+variable_new="7.3"
+variable="6.3"
 fi
 
 echo "--> TAXA TYPE: $1"

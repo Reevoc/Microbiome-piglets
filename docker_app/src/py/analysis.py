@@ -1,6 +1,6 @@
 from utility import create_metadata_files
-from choice import metadata_choice, ANCOM_choice, table_choice, normalization_choice, imputation_choice, MASLIN_choice, quality_value_choice
-from run import run_metadata, run_normalization, run_ANCOM, run_MASLIN, run_metrics, run_denoising
+from choice import metadata_choice, ANCOM_choice, table_choice, normalization_choice, imputation_choice, MASLIN_choice, quality_value_choice, taxonomy_choice
+from run import run_metadata, run_normalization, run_ANCOM, run_MASLIN, run_metrics, run_denoising, run_get_infromations
 
 sh_normalization = "/home/microbiome/docker_app/src/sh/normalization.sh"
 sh_metrics = "/home/microbiome/docker_app/src/sh/"
@@ -17,7 +17,8 @@ Launch the metadata.py script to create the different
     metadata files specified in the file will store them inside the
     0_piglets_metadata folder
 """
-# create_metadata_files(metdadata_py)
+
+create_metadata_files(metdadata_py)
 
 """
     Launch the metadata.sh script to choose one of the different
@@ -35,13 +36,17 @@ metadata = metadata_choice(metadata_folder)
 """
 Launch the choice for the quality value to take 
 """
-quality_value = quality_value_choice()
+# quality_value = quality_value_choice()
 
 """
 Run the denoising.sh script to denoise the data
 """
-run_denoising(sh_denoising, metadata, quality_value)
+# run_denoising(sh_denoising, metadata, quality_value)
 
+"""
+    Choose if export the taxonomy file as csv to see the code and the realtive taxon
+"""
+# taxonomy_choice()
 """
     Choose the type of the imputation to use for the later normalization
     there are avariable 3 different types of imputation:
@@ -50,7 +55,6 @@ run_denoising(sh_denoising, metadata, quality_value)
     - norm_imputed
 """
 imputation = imputation_choice()
-
 """
     Choose the type of normalization to use for the analysis
     There are 2 different types of normalization:
@@ -58,7 +62,6 @@ imputation = imputation_choice()
     - clr
 """
 normalization = normalization_choice()
-
 """
     Choose the type of taxa to use for the analysis
     There are 3 different types of taxa:
@@ -72,7 +75,12 @@ taxa_type = table_choice()
     Launch the normalization.sh script to normalize the data
     with the normalization and taxatype chosen by the user
 """
-run_normalization(sh_normalization, taxa_type, normalization, metadata, imputation)
+# run_normalization(sh_normalization, taxa_type, normalization, metadata, imputation)
+
+"""
+    Launch the get_informations pyhton script to extract the informations in the folders created
+"""
+# run_get_infromations()
 
 """
     Launch the metrics.sh script to choose the metrics to use for the analysis
@@ -83,7 +91,6 @@ run_normalization(sh_normalization, taxa_type, normalization, metadata, imputati
 """
 
 run_metrics(sh_metrics, taxa_type, normalization, metadata)
-
 
 """
     Decide if perform ancom analysis or not

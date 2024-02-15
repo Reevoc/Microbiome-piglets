@@ -45,8 +45,8 @@ print(paste("--> List column value:", paste(list_column_value, collapse = ", "))
 taxa_ids <- c(asv = 1, genus = 2, species = 3)
 id <- taxa_ids[taxa]
 dir <- "/home/microbiome/data"
-output_base_dir <- paste0(dir, "/14.", id, "_", taxa, "_", norm, "_DA_MaAsLin2")
-filename_in <- paste0(dir, "/10.", id, "_", taxa, "_", norm, "_table_norm/", taxa, "_", norm, "_table_norm.qza")
+output_base_dir <- paste0(dir, "/8.", id, "_", taxa, "_", norm, "_DA_MaAsLin2")
+filename_in <- paste0(dir, "/6.", id, "_", taxa, "_", norm, "_table_norm/", taxa, "_", norm, "_table_norm.qza")
 path_metadata <- paste0(dir, "/0_piglets_metadata/", tsv_file)
 
 setwd(dir)

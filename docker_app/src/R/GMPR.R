@@ -18,11 +18,10 @@ taxa_table <- t(taxa_table)
 taxa_table <- as.data.frame(taxa_table)
 GMPR_factors <- GMPR(OTUmatrix = taxa_table)
 print("GMPR factors:")
-print(GMPR_factors)
 taxa_table_norm <- t(taxa_table / GMPR_factors)
 taxa_table_norm[is.na(taxa_table_norm)] <- 0
 
-list_folder <- create_folder_name_and_file("10", taxatype, "gmpr_table_norm")
+list_folder <- create_folder_name_and_file("6", taxatype, "gmpr_table_norm")
 folder_name <- list_folder[[1]]
 folder_path <- paste(dir, "/", folder_name, sep = "")
 

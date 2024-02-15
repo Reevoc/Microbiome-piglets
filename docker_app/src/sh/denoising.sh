@@ -37,29 +37,29 @@ echo "reverse_left --> $reverse_left"
 echo "reverse_right --> $reverse_right"
 
 
-#qiime dada2 denoise-paired \
-#  --i-demultiplexed-seqs data/2_paired-end-demux-trimmed/paired-end-demux-trimmed.qza \
-#  --p-trim-left-f $forward_left \
-#  --p-trim-left-r $reverse_left \
-#  --p-trunc-len-f $forward_right \
-#  --p-trunc-len-r $reverse_right \
-#  --p-n-threads 6 \
-#  --o-table data/3_feature_tables/feature_table.qza \
-#  --o-representative-sequences data/3_feature_tables/feature_sequences.qza \
-#  --o-denoising-stats data/3_feature_tables/denoising_stats.qza
-#
-#qiime feature-table summarize \
-#  --i-table data/3_feature_tables/feature_table.qza \
-#  --m-sample-metadata-file "data/0_piglets_metadata/${2}" \
-#  --o-visualization data/3_feature_tables/feature_table.qzv
-#
-#qiime feature-table tabulate-seqs \
-#  --i-data data/3_feature_tables/feature_sequences.qza \
-#  --o-visualization data/3_feature_tables/feature_sequences.qzv
-#
-#qiime metadata tabulate \
-#  --m-input-file data/3_feature_tables/denoising_stats.qza \
-#  --o-visualization data/3_feature_tables/denoising_stats.qzv
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs data/2_paired-end-demux-trimmed/paired-end-demux-trimmed.qza \
+  --p-trim-left-f $forward_left \
+  --p-trim-left-r $reverse_left \
+  --p-trunc-len-f $forward_right \
+  --p-trunc-len-r $reverse_right \
+  --p-n-threads 6 \
+  --o-table data/3_feature_tables/feature_table.qza \
+  --o-representative-sequences data/3_feature_tables/feature_sequences.qza \
+  --o-denoising-stats data/3_feature_tables/denoising_stats.qza
+
+qiime feature-table summarize \
+  --i-table data/3_feature_tables/feature_table.qza \
+  --m-sample-metadata-file "data/0_piglets_metadata/${2}" \
+  --o-visualization data/3_feature_tables/feature_table.qzv
+
+qiime feature-table tabulate-seqs \
+  --i-data data/3_feature_tables/feature_sequences.qza \
+  --o-visualization data/3_feature_tables/feature_sequences.qzv
+
+qiime metadata tabulate \
+  --m-input-file data/3_feature_tables/denoising_stats.qza \
+  --o-visualization data/3_feature_tables/denoising_stats.qzv
 #
 conda deactivate
 
@@ -111,7 +111,6 @@ qiime feature-table summarize \
   --m-sample-metadata-file "data/0_piglets_metadata/${2}"
 
 conda deactivate
-
 
 
 

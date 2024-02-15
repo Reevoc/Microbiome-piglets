@@ -2,7 +2,6 @@ import csv
 import sys
 import utility
 
-
 def read_args():
     """Read args given to python script"""
     taxa_type = sys.argv[1]
@@ -14,7 +13,7 @@ def read_args():
 
 def create_path_csv(taxa_number, taxa_type, normalization="gmpr"):
     """Create path to csv file"""
-    path = f"/home/microbiome/data/10.{taxa_number}_{taxa_type}_{normalization}_table_norm/{taxa_type}_{normalization}_summary.csv"
+    path = f"/home/microbiome/data/6.{taxa_number}_{taxa_type}_{normalization}_table_norm/{taxa_type}_{normalization}_summary.csv"
     return path
 
 

@@ -13,7 +13,7 @@ taxatype <- commandArgs(TRUE)[1]
 print("--> CLR STARTED")
 
 # Importing
-filename_in <- paste(taxatype, "_table_taxafilt", sep = "")
+filename_in <-data/taxonomy paste(taxatype, "_table_taxafilt", sep = "")
 taxa_ls <- take_specific_qza(dir, filename_in)
 
 taxa_table <- taxa_ls$data
@@ -24,7 +24,7 @@ taxa_table_clr <- compositions::clr(compositions::acomp(taxa_table))
 
 taxa_table_clr[is.na(taxa_table_clr) | is.infinite(taxa_table_clr)] <- 0
 
-list_folder <- create_folder_name_and_file("10", taxatype, "clr_table_norm")
+list_folder <- create_folder_name_and_file("6", taxatype, "clr_table_norm")
 folder_name <- list_folder[[1]]
 folder_path <- paste(dir, "/", folder_name, sep = "")
 

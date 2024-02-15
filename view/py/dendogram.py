@@ -108,7 +108,7 @@ def plot_legend(styles):
 if __name__ == "__main__":
     # Specify your CSV file path
     csv_file_path = (
-        "/home/piermarco/Documents/Thesis/data/4_taxonomy/q2:types_to_Taxon_table.csv"
+        "/home/piermarco/Documents/Thesis/data/taxonomy/q2:types_to_Taxon_table.csv"
     )
     # Build the tree from the CSV data
     t = build_tree_from_csv(csv_file_path)

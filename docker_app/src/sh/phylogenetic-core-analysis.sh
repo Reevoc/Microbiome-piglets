@@ -11,8 +11,8 @@ fi
 
 source activate microbiome
 
-variable_new="11.1"
-variable="10.1"
+variable_new="7.1"
+variable="6.1"
 sampling_depth=$(printf "%.0f" "${4}")
 echo "--> TAXA TYPE: $1"
 echo "--> NORMALIZATION TYPE: $2"
@@ -29,7 +29,7 @@ rm -rf "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic"
 
 qiime diversity core-metrics-phylogenetic \
 --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
---i-phylogeny "data/6_tree/tree.qza" \
+--i-phylogeny "data/tree/tree.qza" \
 --m-metadata-file "data/0_piglets_metadata/${3}" \
 --output-dir "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic" \
 --p-sampling-depth ${sampling_depth}
@@ -58,7 +58,7 @@ qiime diversity alpha-group-significance \
 
 qiime diversity alpha-rarefaction \
   --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
-  --i-phylogeny "data/6_tree/tree.qza" \
+  --i-phylogeny "data/tree/tree.qza" \
   --m-metadata-file "data/0_piglets_metadata/${3}" \
   --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic/${1}_${2}_diversity_alpha_rerefaction.qzv" \
   --p-max-depth ${sampling_depth}

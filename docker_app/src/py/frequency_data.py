@@ -35,7 +35,7 @@ def main():
     name = sys.argv[1]
     value = name_mapping.get(name, "1")
 
-    path = f"/home/microbiome/data/10.{value}_{name}_{sys.argv[2]}_table_norm/{name}_{sys.argv[2]}_table_norm_export/"
+    path = f"/home/microbiome/data/6.{value}_{name}_{sys.argv[2]}_table_norm/{name}_{sys.argv[2]}_table_norm_export/"
     path_html = path + "index.html"
 
     soup = read_and_parse_html(path_html)
@@ -47,9 +47,9 @@ def main():
     for sample_row, feature_row in zip(sample_data, feature_data):
         combined_data.append([sample_row[0], sample_row[1], feature_row[1]])
 
-    csv_file = f"/home/microbiome/data/10.{value}_{name}_{sys.argv[2]}_table_norm/{name}_{sys.argv[2]}_summary.csv"
+    csv_file = f"/home/microbiome/data/6.{value}_{name}_{sys.argv[2]}_table_norm/{name}_{sys.argv[2]}_summary.csv"
     write_to_csv(csv_file, combined_data)
-
+    
     subprocess.run(["rm", "-r", path])
 
 

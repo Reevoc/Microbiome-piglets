@@ -6,6 +6,7 @@ import zipfile
 import glob
 import subprocess
 import numpy as np
+from utility import extract_qzv_files, find_latest_directory
 
 def find_tsv_quality_control(tsv_path):
     tsv = pd.read_csv(tsv_path, sep='\t')
@@ -35,18 +36,6 @@ def plot_quality_control(tsv, name):
     plt.legend(loc='lower left')
     plt.savefig(f'/home/microbiome/data/2_paired-end-demux-trimmed/{name}_quality_plot.png')
 
-def extract_qzv_files(base_path):
-    qzv_files = glob.glob(os.path.join(base_path, '*.qzv'))
-    for qzv_file in qzv_files:
-        with zipfile.ZipFile(qzv_file, 'r') as zip_ref:
-            zip_ref.extractall(base_path)
-
-def find_latest_directory(base_path):
-    if not os.path.exists(base_path):
-        return None
-    dirs = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
-    dirs.sort(reverse=True)
-    return dirs[0] if dirs else None
 
 def create_quality_threshold(tsv, percentile, quality_threshold, file, overwrite=False):
     median_values = tsv.loc[tsv['Unnamed: 0'] == f'{percentile}'].drop('Unnamed: 0', axis=1).squeeze()

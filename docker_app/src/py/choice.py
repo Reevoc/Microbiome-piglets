@@ -2,7 +2,7 @@ import os
 import subprocess
 from message import print_message, print_explanation
 from rich_table_display import display_csv_summary_with_rich
-from utility import eliminate_folder
+from utility import extract_qzv_files, find_latest_directory
 
 def metadata_choice(metadata_folder):
     correct_input = False
@@ -30,6 +30,13 @@ def metadata_choice(metadata_folder):
             )
     return tuple_number_metadata[int(metadata_file) - 1][1]
 
+def taxonomy_calassification_choice():
+    print_explanation("Decide if you want to perform the taxonomy classification or not\n"+
+                      "N.B. You need to perfromr the taxonomy classification once afters is saved in the data folder")
+    choice = input("Do you want to perform the taxonomy classification? [y/n]")
+    if choice == "y":
+        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/taxonomy_classification.sh"])
+    
 
 def ANCOM_choice():
     correct_input = False
@@ -226,8 +233,33 @@ def quality_value_choice():
         except ValueError:
             print_message("The value insert is incorrect retry")
             
+def taxonomy_choice():
+    print_message("Decide if export the taxonimy file as csv to see the code and the realtive taxon")
+    choice = input("Do you want to export the taxonomy file as csv? [y/n]")
+    if choice == "y":
+        extract_qzv_files("/home/microbiome/data/taxonomy")
+        directory = find_latest_directory("/home/microbiome/data/taxonomy")
+        
+        try:
+            final_directory = os.path.join("/home/microbiome/data/taxonomy", directory, "data")
+            print(final_directory)
+        except TypeError:
+            print_message("The directory is empty")
+        except FileNotFoundError:
+            print_message("The directory data is not found")
 
+        for file in os.listdir(final_directory):
+            if file == "metadata.tsv":
+                subprocess.run(["mv", os.path.join(final_directory, file), "/home/microbiome/data/taxonomy/taxonomy.tsv"])
+                subprocess.run(["rm", "-rf", os.path.join("/home/microbiome/data/taxonomy", directory)])
+                    
+                    
+        
             
+        
+        
+        
+        
 
     
          

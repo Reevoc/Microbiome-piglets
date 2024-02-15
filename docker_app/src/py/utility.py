@@ -3,7 +3,7 @@ import csv
 import glob
 import os
 from message import print_message, print_explanation
-
+import zipfile
 
 def create_metadata_files(metadata_py):
     try:
@@ -11,18 +11,7 @@ def create_metadata_files(metadata_py):
     except subprocess.CalledProcessError:
         print_message("\n Error during metadata python launch \n")
 
-
 def read_quantile(path_csv, row_number):
-    """
-    Reads a CSV file and returns the row with the specified number.
-
-    Args:
-        path_csv (str): The path to the CSV file.
-        row_number (int): The row number to match.
-
-    Returns:
-        list: A list of the 2 elements (col_ 1 ,col_2) of the row with the specified number.
-    """
     tuple_freq_samp = []
     row_number = int(row_number)
     with open(path_csv, "r") as file:
@@ -34,104 +23,43 @@ def read_quantile(path_csv, row_number):
                 tuple_freq_samp.append((sample, feature))
     return tuple_freq_samp
 
+def eliminate_subfolder(base_path):
+    subfolders = [f.path for f in os.scandir(base_path) if f.is_dir()]
+    for subfolder in subfolders:
+        subprocess.run(["rm", "-r", subfolder])
 
+def extract_qzv_files(base_path):
+    qzv_files = glob.glob(os.path.join(base_path, '*.qzv'))
+    for qzv_file in qzv_files:
+        with zipfile.ZipFile(qzv_file, 'r') as zip_ref:
+            zip_ref.extractall(base_path)
 
+def find_latest_directory(base_path):
+    if not os.path.exists(base_path):
+        return None
+    dirs = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+    dirs.sort(reverse=True)
+    return dirs[0] if dirs else None
 
-def save_analysis_performed(metadata, normalization_type, taxa_type, imputation):
-    """
-    Saves the analysis performed to respective folders.
+def export_pngs(base_path, output_path):
+    images = glob.glob(os.path.join(base_path, '*.png'))
+    for image in images:
+        subprocess.run(["mv", image, output_path])
 
-    Args:
-        metadata (str): The metadata filename.
-        normalization_type (str): The normalization type.
-        taxa_type (str): The taxa type.
-        imputation (str): The imputation type.
-
-    Returns:
-        None
-    """
-    try:
-        os.mkdir("/home/microbiome/analysis_performed")
-    except FileExistsError:
-        pass
-    except Exception as e:
-        print_message(f"\nError during creation of analysis_performed folder: {e}\n")
-
-    name_analysis = f"{metadata}_{normalization_type}_{taxa_type}_{imputation}"
-    base_dir = f"/home/microbiome/analysis_performed/{name_analysis}"
-
-    try:
-        # Create necessary directories
-        os.makedirs(base_dir, exist_ok=True)
-        os.makedirs(f"{base_dir}/metadata", exist_ok=True)
-        os.makedirs(f"{base_dir}/normalization", exist_ok=True)
-        os.makedirs(f"{base_dir}/metrics", exist_ok=True)
-
-        print_message("\nCopying files to analysis_performed folder...\n")
-        subprocess.run(
-            [
-                "cp",
-                f"/home/microbiome/data/0_piglets_metadata/{metadata}",
-                f"{base_dir}/metadata/",
-            ]
-        )
-        print_message("\nMetadata file copied\n")
-        subprocess.run(
-            [
-                "cp",
-                "-r",
-                f"/home/microbiome/data/10.1_asv_{normalization_type}_table_norm/",
-                f"{base_dir}/normalization/",
-            ]
-        )
-
-        subprocess.run(
-            [
-                "cp",
-                f"/home/microbiome/data/10.2_genus_{normalization_type}_table_norm/genus_{normalization_type}_table_norm.qzv",
-                f"{base_dir}/normalization/",
-            ]
-        )
-        subprocess.run(
-            [
-                "cp",
-                f"/home/microbiome/data/10.3_species_{normalization_type}_table_norm/species_{normalization_type}_table_norm.qzv",
-                f"{base_dir}/normalization/",
-            ]
-        )
-        print_message("\nNormalization files copied\n")
-        subprocess.run(
-            [
-                "cp",
-                "-r",
-                f"/home/microbiome/data/11.1_asv_{normalization_type}_core_metrics_phylogenetic/",
-                f"{base_dir}/metrics/",
-            ]
-        )
-        subprocess.run(
-            [
-                "cp",
-                "-r",
-                f"/home/microbiome/data/11.2_genus_{normalization_type}_core_metrics_non-phylogenetic/",
-                f"{base_dir}/metrics/",
-            ]
-        )
-        subprocess.run(
-            [
-                "cp",
-                "-r",
-                f"/home/microbiome/data/11.3_species_{normalization_type}_core_metrics_non-phylogenetic/",
-                f"{base_dir}/metrics/",
-            ]
-        )
-        print_message("\nMetrics files copied\n")
-
-    except Exception as e:
-        print_message(f"\nError during creation of folder or file copying: {e}\n")
-
-def eliminate_folder(base_path):
-    data_path = os.path.join(base_path)
-    folders = glob.glob(data_path + "/*")
-    for folder in folders:
-        subprocess.run(["rm", "-rf", folder])
+def export_csv(base_path, output_path):
+    csv_files = glob.glob(os.path.join(base_path, '*.csv'))
+    for csv_file in csv_files:
+        subprocess.run(["mv", csv_file, output_path])
+    
+def export_all_usefull_informations(base_path, output_path):
+    extract_qzv_files(base_path)
+    directory_created = find_latest_directory(base_path)
+    if directory_created is not None:
+        export_pngs(os.path.join(base_path, directory_created, "data"), output_path) 
+        export_csv(os.path.join(base_path, directory_created, "data"), output_path)
+        eliminate_subfolder(base_path)
+    else:
+        print_message("No directory created")
+        return False
         
+    

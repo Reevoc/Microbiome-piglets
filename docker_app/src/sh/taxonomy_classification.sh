@@ -4,7 +4,7 @@ cd /home/microbiome
 
 source activate microbiome
 
-echo "--> START GENERATE TREE"
+echo "--> START TAXONOMY CLASSIFICATION"
 
 qiime feature-classifier classify-sklearn \
 --i-classifier data/classifier/classifier.qza \

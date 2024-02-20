@@ -17,7 +17,6 @@ taxa_table <- taxa_ls$data
 taxa_table <- t(taxa_table)
 taxa_table <- as.data.frame(taxa_table)
 GMPR_factors <- GMPR(OTUmatrix = taxa_table)
-print("GMPR factors:")
 taxa_table_norm <- t(taxa_table / GMPR_factors)
 taxa_table_norm[is.na(taxa_table_norm)] <- 0
 

@@ -8,38 +8,41 @@ from plot_csv import plot_feature_table_3d_histogram, create_heatmap
 import os
 import glob
 from rich_table_display import display_csv_summary_with_rich
-from utility import export_all_usefull_informations
+from utility import export_all_usefull_informations, eliminate_feature_not_true
+from trasnsalte_features import translate_feature
 
 
 def run_denoising(path_denosing_sh, metadata_file, quality_value):
     """
     Run the denoising the denoising
     """
-    try:
-        with zipfile.ZipFile("/home/microbiome/data/tree/tree.qza", 'r') as zip_ref:
-            try:
-                zip_ref.extractall("/home/microbiome/data/tree/tree")
-            except FileExistsError:
-                print_message("tree.qza already unzipped")
-    except FileNotFoundError:
-        raise FileNotFoundError("tree.qza not found")
-    print(f"bash {path_denosing_sh} {quality_value} {metadata_file}")
-    subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file])
+    dir_tree = {"1": "rooted", "2": "unrooted", "3": "no_tree"}
+    choice = input("Do you want to use as distance matrix for mImpute [rooted or urooted or notree]? [r/u/n]")
+    if choice == "r":
+        subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file, "y" , "rooted"])
+    elif choice == "u":
+        subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file, "y", "unrooted"])
+    elif choice == "n":
+        subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file, "n", "no_tree"])  
     choice = input("Do you want create plot for the different count of sequences? [y/n]")
     path_data = "/home/microbiome/data/"
+    
     if choice == "y":
+        
         path_row = f"{path_data}3_feature_tables/feature_table.csv"
         path_imputed = f"{path_data}3.1_feature_table_imp/feature_table_imp.csv"
         path_imputed_nrm = f"{path_data}3.2_feature_table_imp_nrm/feature_table_imp_nrm.csv"
         path_imputed_lgn = f"{path_data}3.3_feature_table_imp_lgn/feature_table_imp_lgn.csv"
+        
         for path in [path_row, path_imputed, path_imputed_nrm, path_imputed_lgn]:
             if os.path.exists(path):
                 print(f"Creating 3D histogram for {path}")
                 df = pd.read_csv(path)
-                plot_feature_table_3d_histogram(df, f"images/3D_histogram_{os.path.basename(path)}.png")
-            if path != path_row:
-                print(f"Creating heatmap for {path}")
-                create_heatmap(path_row, path, f"images/heatmap_{os.path.basename(path)}.png")
+                plot_feature_table_3d_histogram(df, os.path.join('/'.join(path.split('/')[:-1]), f'3D_histogram_{os.path.basename(path).split(".")[0]}.png'))
+                if path != path_row:
+                    print(f"Creating heatmap for {path}")
+                    create_heatmap(path_row, path, os.path.join('/'.join(path.split('/')[:-1]), f'heatmap_{os.path.basename(path).split(".")[0]}.png'))
+
         
 def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     """Run ANCOM analysis."""
@@ -48,16 +51,11 @@ def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     col_name = column_for_ancom_choice(metadata_df)
     taxa_list = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
     normalizations = ["gmpr", "clr"] if normalization == "all" else [normalization]
-    print_message(
-        "ATTENTION: using ANCOM with clr, ANCOM perform automatically a CLR in output\n"
-        + "so if you use clr as normalization you will have a double CLR in output.\n"
-        + "Instead is better if only check the output of ANCOM with gmpr normalization\n"
-        + "ATTENTION to the usage of the min frequency for the quantile in ASV table\n"
-        + "cause long time of analysis, for the output of .qzv file\n"
-    )
     for norm in normalizations:
         for taxa in taxa_list:
             print_message(f"ANCOM for {taxa} {norm} data")
+            taxa_value = {"asv": "1", "genus": "2", "species": "3"}
+            display_csv_summary_with_rich(f"/home/microbiome/data/5.{taxa_value[taxa]}_{taxa}_table_taxafilt/summary.csv")
             quantile_num = quantile_choice()
             try:
                 subprocess.run(
@@ -71,14 +69,18 @@ def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
                         taxa,
                     ]
                 )
+                export_all_usefull_informations(f"/home/microbiome/data/8.{taxa_value[taxa]}_{taxa}_{norm}_DA_ANCOM/", f"/home/microbiome/data/8.{taxa_value[taxa]}_{taxa}_{norm}_DA_ANCOM/")
+                eliminate_feature_not_true(f"/home/microbiome/data/8.{taxa_value[taxa]}_{taxa}_{norm}_DA_ANCOM/ancom.tsv", f"/home/microbiome/data/8.{taxa_value[taxa]}_{taxa}_{norm}_DA_ANCOM/percent-abundances.tsv")
+                if taxa == "asv":
+                    translate_feature(f"/home/microbiome/data/taxonomy/taxonomy.tsv", f"/home/microbiome/data/8.1_asv_{norm}_DA_ANCOM/percent-abundances_filtered.csv")
             except subprocess.CalledProcessError:
                 print_message("\nError during ANCOM bash launch\n")
-
-
+    
+    
 def run_MASLIN(sh_MASLIN, taxa_type, normalization, metadata_file):
     """Run MaAsLin2 analysis."""
     path_to_data = '/home/microbiome/data/'
-    subprocess.run(['bash', '-c', f'find {path_to_data} -name "14*" -exec rm -rf {{}} +'])
+    subprocess.run(['bash', '-c', f'find {path_to_data} -name "9*" -exec rm -rf {{}} +'])
     taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
     normalizations = ["gmpr", "clr"] if normalization == "all" else [normalization]
     for norm in normalizations:
@@ -197,14 +199,14 @@ def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
     try:
         for taxa in taxa_types:
             for norm in normalization_types:
-                print_message(f"Metrics for {taxa} {norm} data")
+                print_message(f"--> Metrics for: {taxa} {norm} ")
+                display_csv_summary_with_rich(f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/summary.csv")
+                quantile_row = quantile_choice()
                 quantile = read_quantile(
-                    f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/{taxa}_{norm}_summary.csv",
+                    f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/summary.csv",
                     quantile_row,
                 )[0]
-                display_csv_summary_with_rich(f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/{taxa}_{norm}_summary.csv")
-                quantile_row = quantile_choice()
-                print(f"Quantile chosen: {quantile}")
+                print(f"--> Quantile chosen: {quantile}")
                 subprocess.run(
                     [
                         "bash",

@@ -7,15 +7,14 @@ def read_args():
     taxa_type = sys.argv[1]
     normalization = sys.argv[2]
     quantile_num = sys.argv[3]
-    taxa_number = {"asv": "1", "genus": "2", "species": "3"}.get(taxa_type, "1")
+    taxa_dict = {"asv": "1", "genus": "2", "species": "3"}
+    taxa_number = taxa_dict[taxa_type]
     return taxa_number, taxa_type, normalization, quantile_num
-
 
 def create_path_csv(taxa_number, taxa_type, normalization="gmpr"):
     """Create path to csv file"""
-    path = f"/home/microbiome/data/6.{taxa_number}_{taxa_type}_{normalization}_table_norm/{taxa_type}_{normalization}_summary.csv"
+    path = f"/home/microbiome/data/5.{taxa_number}_{taxa_type}_table_taxafilt/summary.csv"
     return path
-
 
 def take_information_csv(path_csv, quantile_num):
     """Take information from csv file"""
@@ -23,7 +22,6 @@ def take_information_csv(path_csv, quantile_num):
     sample_frequency = frequency[0][0]
     feature_frequency = frequency[0][1]
     return sample_frequency, feature_frequency
-
 
 def main():
     """Main function"""

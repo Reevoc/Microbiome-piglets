@@ -2,7 +2,7 @@ import os
 import subprocess
 from message import print_message, print_explanation
 from rich_table_display import display_csv_summary_with_rich
-from utility import extract_qzv_files, find_latest_directory
+from utility import extract_qzv_files, find_latest_directory, export_specified_all_nwk
 
 def metadata_choice(metadata_folder):
     correct_input = False
@@ -36,6 +36,15 @@ def taxonomy_calassification_choice():
     choice = input("Do you want to perform the taxonomy classification? [y/n]")
     if choice == "y":
         subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/taxonomy_classification.sh"])
+
+def tree_creation_choice():
+    print_explanation("Decide if you want to create the tree or not\n"+
+                      "N.B. You need to perfromr the tree creation once afters is saved in the data folder")
+    choice = input("Do you want to create the tree? [y/n]")
+    if choice == "y":
+#        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/phylogenetic_tree.sh"])
+        export_specified_all_nwk("/home/microbiome/data/tree", "/home/microbiome/data/tree/tree.nwk")
+        
     
 
 def ANCOM_choice():

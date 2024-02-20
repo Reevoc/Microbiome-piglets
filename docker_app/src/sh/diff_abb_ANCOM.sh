@@ -28,42 +28,37 @@ fi
 echo "--> SAMPLE FREQUENCY: $sample_frequency"
 echo "--> FEATURE FREQUENCY: $feature_frequency"
 
-mkdir -p "data/13.${number}_${5}_${2}_DA_ANCOM"
+mkdir -p "data/8.${number}_${5}_${2}_DA_ANCOM"
 
 source activate microbiome
-
+#--i-table data/6.${number}_${5}_${2}_table_norm/${5}_${2}_table_norm.qza \
 qiime feature-table filter-samples \
---i-table data/3.1_feature_table_imp/feature_table_imp.qza \
+--i-table data/5.${number}_${5}_table_taxafilt/${5}_table_taxafilt.qza \
 --p-min-frequency $sample_frequency \
---o-filtered-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza
+--o-filtered-table data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza
 
 echo "--> FILTERING BY SAMPLE FREQUENCY"
 
 qiime feature-table filter-features \
---i-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza \
+--i-table data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza \
 --p-min-samples $feature_frequency \
---o-filtered-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza
+--o-filtered-table data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza
 
 echo "--> FILTERING BY FEATURE FREQUENCY"
 
 qiime composition add-pseudocount \
-    --i-table data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza \
-    --o-composition-table "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qza"
+    --i-table data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza \
+    --o-composition-table "data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qza"
 
 echo "--> ADDING PSEUDOCOUNTS"
-
-qiime feature-table summarize \
-    --i-table "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_feature_filtered.qza" \
-    --o-visualization "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qzv" \
-    --m-sample-metadata-file "data/0_piglets_metadata/$3"
 
 echo "--> SUMMARIZING"
 
 qiime composition ancom \
-    --i-table "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qza" \
+    --i-table "data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM_composition.qza" \
     --m-metadata-file "data/0_piglets_metadata/$3" \
     --m-metadata-column ${1} \
-    --o-visualization "data/13.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM.qzv"
+    --o-visualization "data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_DA_ANCOM.qzv"
 
 echo "--> ANCOM FINISHED"
 

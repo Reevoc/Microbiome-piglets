@@ -115,6 +115,9 @@ mkdir -p data/5.${variable}_$1_table_taxafilt
 
 conda deactivate
 
+rm -rf data/6.${variable}_$1_$2_table_norm
+mkdir -p data/6.${variable}_$1_$2_table_norm
+
 if [ "$2" == "gmpr" ]; then
     echo "--> LAUNCHING GMPR"
     Rscript docker_app/src/R/GMPR_TRY.R $1

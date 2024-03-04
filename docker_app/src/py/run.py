@@ -28,7 +28,6 @@ def run_denoising(path_denosing_sh, metadata_file, quality_value):
         
         
 def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
-    """Run ANCOM analysis."""
     path_metadata = f"/home/microbiome/data/0_piglets_metadata/{metadata_file}"
     metadata_df = pd.read_csv(path_metadata, sep="\t")
     col_name = column_for_ancom_choice(metadata_df)
@@ -85,42 +84,51 @@ def run_metadata(sh_metadata, metadata):
         print_message("\nError during metadata bash launch\n")
 
 def run_get_infromations():
-    imputation_dict = {"3.1": "feature_table_imp", "3.2": "feature_table_imp_nrm", "3.3": "feature_table_imp_lgn"}
-    for key, value in imputation_dict.items():
-        try:
-            export_all_usefull_informations(f"/home/microbiome/data/{key}_{value}/", f"/home/microbiome/data/{key}_{value}/")
-        except FileNotFoundError:
-            print_message(f"Error during export of {value} data")
-            continue
-    
-    normalizations = ["gmpr", "clr"]
-    taxa_dict = {"asv":"1", "genus":"2", "species":"3"}
-    for taxa, value in taxa_dict.items():
-        try:
-            export_all_usefull_informations(f"/home/microbiome/data/4.{value}_{taxa}_table/", f"/home/microbiome/data/4.{value}_{taxa}_table/")
-            export_all_usefull_informations(f"/home/microbiome/data/5.{value}_{taxa}_table_taxafilt/", f"/home/microbiome/data/5.{value}_{taxa}_table_taxafilt/")
-        except FileNotFoundError:
-            print_message(f"Error during export of {taxa} data")
-            continue
-    for taxa, value in taxa_dict.items():
-        for norm in normalizations:
-            try:
-                export_all_usefull_informations(f"/home/microbiome/data/6.{value}_{taxa}_{norm}_table_norm/", f"/home/microbiome/data/6.{value}_{taxa}_{norm}_table_norm/")
-            except FileNotFoundError:
-                print_message(f"Error during export of {taxa} {norm} data")
-                continue
-            
-    print_message("Those are the standard deviation for the different tables remeber should be around 25% to let ANCOM analysis be effective")
-    for taxa, value in taxa_dict.items():
-        std, sdt_perc = calculate_standard_deviation(f"/home/microbiome/data/5.{value}_{taxa}_table_taxafilt/sample-frequency-detail.csv")
-        print(f"Standard deviation for {taxa} in table taxa filt: {std} and {sdt_perc}%")
-        for norm in normalizations:
-            std, std_perc = calculate_standard_deviation(f"/home/microbiome/data/6.{value}_{taxa}_{norm}_table_norm/sample-frequency-detail.csv")
-            print(f"Standard deviation for {taxa} in table norm {norm}: {std} and {std_perc}%")
-            
+    correct_input = False
+    while not correct_input:
+        choice = input("Whant to check if the data are compositional? [y/n]")
+        if choice == "y":
+            correct_input = True    
+            imputation_dict = {"3.1": "feature_table_imp", "3.2": "feature_table_imp_nrm", "3.3": "feature_table_imp_lgn"}
+            for key, value in imputation_dict.items():
+                try:
+                    export_all_usefull_informations(f"/home/microbiome/data/{key}_{value}/", f"/home/microbiome/data/{key}_{value}/")
+                except FileNotFoundError:
+                    print_message(f"Error during export of {value} data")
+                    continue
+                
+            normalizations = ["gmpr", "clr"]
+            taxa_dict = {"asv":"1", "genus":"2", "species":"3"}
+            for taxa, value in taxa_dict.items():
+                try:
+                    export_all_usefull_informations(f"/home/microbiome/data/4.{value}_{taxa}_table/", f"/home/microbiome/data/4.{value}_{taxa}_table/")
+                    export_all_usefull_informations(f"/home/microbiome/data/5.{value}_{taxa}_table_taxafilt/", f"/home/microbiome/data/5.{value}_{taxa}_table_taxafilt/")
+                except FileNotFoundError:
+                    print_message(f"Error during export of {taxa} data")
+                    continue
+            for taxa, value in taxa_dict.items():
+                for norm in normalizations:
+                    try:
+                        export_all_usefull_informations(f"/home/microbiome/data/6.{value}_{taxa}_{norm}_table_norm/", f"/home/microbiome/data/6.{value}_{taxa}_{norm}_table_norm/")
+                    except FileNotFoundError:
+                        print_message(f"Error during export of {taxa} {norm} data")
+                        continue
+                    
+            print_message("Those are the standard deviation for the different tables\n"+
+                          "N.B: The standard deviation should be <= 25% to mantain the data compositional")
+            for taxa, value in taxa_dict.items():
+                std, sdt_perc = calculate_standard_deviation(f"/home/microbiome/data/5.{value}_{taxa}_table_taxafilt/sample-frequency-detail.csv")
+                print(f"Standard deviation for {taxa} in table taxa filt: {std} and {sdt_perc}%")
+                for norm in normalizations:
+                    std, std_perc = calculate_standard_deviation(f"/home/microbiome/data/6.{value}_{taxa}_{norm}_table_norm/sample-frequency-detail.csv")
+                    print(f"Standard deviation for {taxa} in table norm {norm}: {std} and {std_perc}%")
+        elif choice == "n":
+            correct_input = True
+                
 def run_normalization(
     sh_normalization, taxa_type, normalization_type, metadata, imputation
 ):
+    
     taxa_mapping = {
         "asv": {
             "script": "phylogenetic-core-analysis.sh",
@@ -138,113 +146,128 @@ def run_normalization(
             "number": "2"
         },
     }
+    correct_input = False
+    while not correct_input:
+        choice = input("Do you want to run the normalization step? [y/n]")
+        if choice == "y":
+            taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type] 
+            try:
+                if normalization_type == "all" and taxa_type == "all":
+                    for taxa in ["asv", "genus", "species"]:
+                        for norm in ["gmpr", "clr"]:
+                            subprocess.run(
+                                [
+                                    "bash",
+                                    sh_normalization,
+                                    taxa,
+                                    norm,
+                                    metadata,
+                                    imputation,
+                                ]
+                            )
 
-    taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type] 
-    try:
-        if normalization_type == "all" and taxa_type == "all":
-            for taxa in ["asv", "genus", "species"]:
-                for norm in ["gmpr", "clr"]:
+                elif normalization_type == "all" and taxa_type != "all":
+                    for norm in ["gmpr", "clr"]:
+                        subprocess.run(
+                            ["bash", sh_normalization, taxa_type, norm, metadata, imputation]
+                        )
+
+                elif normalization_type != "all" and taxa_type == "all":
+                    for taxa in ["asv", "genus", "species"]:
+                        subprocess.run(
+                            [
+                                "bash",
+                                sh_normalization,
+                                taxa,
+                                normalization_type,
+                                metadata,
+                                imputation,
+                            ]
+                        )
+                elif normalization_type != "all" and taxa_type != "all":
                     subprocess.run(
                         [
                             "bash",
                             sh_normalization,
-                            taxa,
-                            norm,
+                            taxa_type,
+                            normalization_type,
                             metadata,
                             imputation,
                         ]
                     )
-             
-        elif normalization_type == "all" and taxa_type != "all":
-            for norm in ["gmpr", "clr"]:
-                subprocess.run(
-                    ["bash", sh_normalization, taxa_type, norm, metadata, imputation]
-                )
+            except subprocess.CalledProcessError:
+                print_message("\nError during normalization bash launch\n")
+        elif choice == "n":
+            correct_input = True
         
-        elif normalization_type != "all" and taxa_type == "all":
-            for taxa in ["asv", "genus", "species"]:
-                subprocess.run(
-                    [
-                        "bash",
-                        sh_normalization,
-                        taxa,
-                        normalization_type,
-                        metadata,
-                        imputation,
-                    ]
-                )
-        elif normalization_type != "all" and taxa_type != "all":
-            subprocess.run(
-                [
-                    "bash",
-                    sh_normalization,
-                    taxa_type,
-                    normalization_type,
-                    metadata,
-                    imputation,
-                ]
-            )
-    except subprocess.CalledProcessError:
-        print_message("\nError during normalization bash launch\n")
-        
-    print_message("what to extract usefull information from taxa filt tables the? [y/n]")
-    choice = input()
-    if choice == "y":
-        for taxa in taxa_types:
-            try:
-                export_all_usefull_informations(f"/home/microbiome/data/5.{taxa_mapping[taxa]['number']}_{taxa}_table_taxafilt/", f"/home/microbiome/data/5.{taxa_mapping[taxa]['number']}_{taxa}_table_taxafilt/")
-            except FileNotFoundError:
-                print_message(f"Error during export of {taxa} data")
-                continue
+    correct_input = False
+    while not correct_input:
+        choice = input("whant to export all the usefull informations? [y/n]")
+        if choice == "y":
+            correct_input = True
+            for taxa in taxa_mapping.keys():
+                try:
+                    export_all_usefull_informations(f"/home/microbiome/data/5.{taxa_mapping[taxa]['number']}_{taxa}_table_taxafilt/", f"/home/microbiome/data/5.{taxa_mapping[taxa]['number']}_{taxa}_table_taxafilt/")
+                except Exception as e:
+                    print_message(f"Error during export of {taxa} data: {str(e)}")
+                    continue
+        elif choice == "n":
+            correct_input = True
 
 def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
-    print_message("Starting metrics analysis...")
-    taxa_mapping = {
-        "asv": {
-            "script": "phylogenetic-core-analysis.sh",
-            "data_path": "/home/microbiome/data/6.1_asv_",
-            "number": "1"
-        },
-        "species": {
-            "script": "non-phylogenetic-core-analysis.sh",
-            "data_path": "/home/microbiome/data/6.3_species_",
-            "number": "2"
-        },
-        "genus": {
-            "script": "non-phylogenetic-core-analysis.sh",
-            "data_path": "/home/microbiome/data/6.2_genus_",
-            "number": "3"
-        },
-    }
+    corrct_input = False
+    while not corrct_input:
+        choice = input("Do you want to run the metrics analysis? [y/n]")
+        corrct_input = True
+        if choice == "y":
+            print_message("-->Starting metrics analysis:")
+            taxa_mapping = {
+                "asv": {
+                    "script": "phylogenetic-core-analysis.sh",
+                    "data_path": "/home/microbiome/data/6.1_asv_",
+                    "number": "1"
+                },
+                "species": {
+                    "script": "non-phylogenetic-core-analysis.sh",
+                    "data_path": "/home/microbiome/data/6.3_species_",
+                    "number": "2"
+                },
+                "genus": {
+                    "script": "non-phylogenetic-core-analysis.sh",
+                    "data_path": "/home/microbiome/data/6.2_genus_",
+                    "number": "3"
+                },
+            }
 
-    taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
-    normalization_types = (
-        ["gmpr", "clr"] if normalization_type == "all" else [normalization_type]
-    )
-    try:
-        for taxa in taxa_types:
-            for norm in normalization_types:
-                print_message(f"--> Metrics for: {taxa} {norm} ")
-                display_csv_summary_with_rich(f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/summary.csv")
-                quantile_row = quantile_choice()
-                quantile = read_quantile(
-                    f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/summary.csv",
-                    quantile_row,
-                )[0]
-                print(f"--> Quantile chosen: {quantile}")
-                subprocess.run(
-                    [
-                        "bash",
-                        f"{sh_metrics}{taxa_mapping[taxa]['script']}",
-                        taxa,
-                        norm,
-                        metadata,
-                        f"{quantile[0]}",
-                    ]
-                )
-    except subprocess.CalledProcessError:
-        print_message("\nError during metrics bash launch\n")
-    
+            taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type]
+            normalization_types = (
+                ["gmpr", "clr"] if normalization_type == "all" else [normalization_type]
+            )
+            try:
+                for taxa in taxa_types:
+                    for norm in normalization_types:
+                        print_message(f"--> Metrics for: {taxa} {norm} ")
+                        display_csv_summary_with_rich(f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/summary.csv")
+                        quantile_row = quantile_choice()
+                        quantile = read_quantile(
+                            f"{taxa_mapping[taxa]['data_path']}{norm}_table_norm/summary.csv",
+                            quantile_row,
+                        )[0]
+                        print(f"--> Quantile chosen: {quantile}")
+                        subprocess.run(
+                            [
+                                "bash",
+                                f"{sh_metrics}{taxa_mapping[taxa]['script']}",
+                                taxa,
+                                norm,
+                                metadata,
+                                f"{quantile[0]}",
+                            ]
+                        )
+            except subprocess.CalledProcessError:
+                print_message("\nError during metrics bash launch\n")
+        elif choice == "n":
+            corrct_input = True    
 
 def run_intersecate_ANCOM_MaAsLin():
     start = True

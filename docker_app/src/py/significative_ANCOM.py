@@ -8,7 +8,6 @@ def ancom_log_ratio(file_path):
     percentiles = sorted(set(value.split('.')[0] for value in data.columns if value != 'Percentile'), key=lambda x: float(x))
     data = data.iloc[1:]
     data.columns = ['Perc_group'] + [f"{group}_{percentile}" for group in groups for percentile in percentiles]
-    print(data.head())
     for group in groups:
         weighted_columns = []
         for percentile in percentiles:

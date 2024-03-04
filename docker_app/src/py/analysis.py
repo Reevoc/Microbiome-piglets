@@ -4,7 +4,7 @@ from choice import taxonomy_calassification_choice, tree_creation_choice
 from run import run_metadata, run_normalization, run_ANCOM, run_MASLIN, run_metrics, run_denoising, run_get_infromations, run_intersecate_ANCOM_MaAsLin, run_imputation
 
 # Path to the shell scripts
-sh_normalization = "/home/microbiome/docker_app/src/sh/normalization.sh"
+sh_normalization = "/home/microbiome/docker_app/src/sh/6-normalization.sh"
 sh_metrics = "/home/microbiome/docker_app/src/sh/"
 sh_metadata = "/home/microbiome/docker_app/src/sh/1-metadata.sh"
 sh_ancom = "/home/microbiome/docker_app/src/sh/diff_abb_ANCOM.sh"

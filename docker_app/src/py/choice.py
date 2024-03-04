@@ -48,8 +48,7 @@ def tree_creation_choice():
 def ANCOM_choice():
     correct_input = False
     while not correct_input:
-        print_explanation("Do you want to run ANCOM in qiime2? [y/n]")
-        choice = input("Enter your choice: ")
+        choice = input("Do you want to run ANCOM in qiime2? [y/n]")
         if choice == "y":
             return True
         elif choice == "n":

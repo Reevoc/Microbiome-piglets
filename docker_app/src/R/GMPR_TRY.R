@@ -20,7 +20,6 @@ taxa_table_transposed <- t(taxa_table)
 
 # Apply GMPR on the transposed table (features)
 GMPR_factors <- GMPR::GMPR(OTUmatrix = as.data.frame(taxa_table_transposed))
-print(GMPR_factors)
 
 # Normalize and then transpose back
 taxa_table_norm <- t(as.data.frame(taxa_table_transposed) / GMPR_factors)

@@ -93,16 +93,23 @@ def export_nwk(base_path, output_path):
         subprocess.run(["mv", nwk_file, output_path])
     
 def export_all_usefull_informations(base_path, output_path):
-    extract_qzv_files(base_path)
-    directory_created = find_latest_directory(base_path)
-    if directory_created is not None:
-        export_pngs(os.path.join(base_path, directory_created, "data"), output_path) 
-        export_csv(os.path.join(base_path, directory_created, "data"), output_path)
-        export_tsv(os.path.join(base_path, directory_created, "data"), output_path)
-        eliminate_subfolder(base_path)
-    else:
-        print_message("No directory created")
+    try:
+        extract_qzv_files(base_path)
+        directory_created = find_latest_directory(base_path)
+        if directory_created is not None:
+            export_pngs(os.path.join(base_path, directory_created, "data"), output_path) 
+            export_csv(os.path.join(base_path, directory_created, "data"), output_path)
+            export_tsv(os.path.join(base_path, directory_created, "data"), output_path)
+            eliminate_subfolder(base_path)
+        else:
+            return False
+    except FileNotFoundError as e:
+        print_message(f"FileNotFoundError: {e}")
         return False
+    except Exception as e:
+        print_message(f"An error occurred: {e}")
+        return False
+
     
 def export_biom_information(base_path, output_path):
     extract_qza_files(base_path)
@@ -157,11 +164,18 @@ def eliminate_feature_not_true(path_csv_ancom, path_perc_abbundances):
     return filtered_perc_abb
 
 def calculate_standard_deviation(path_csv):
-    data = pd.read_csv(path_csv)
-    std_dev = data.iloc[:, 1].std()
-    mean = data.iloc[:, 1].mean()
-    std_dev_percent = (std_dev / mean) * 100
-    return std_dev, std_dev_percent
+    try:
+        data = pd.read_csv(path_csv)
+        std_dev = data.iloc[:, 1].std()
+        mean = data.iloc[:, 1].mean()
+        std_dev_percent = (std_dev / mean) * 100
+        return std_dev, std_dev_percent
+    except FileNotFoundError:
+        print(f"File not found: {path_csv}")
+        return None, None 
+    except Exception as e:
+        print(f"An error occurred while reading the file: {e}")
+        return None, None  
 
 def dataframe_summary(df):
     """

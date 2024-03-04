@@ -15,10 +15,7 @@ def translate_feature(taxonomy_file, percent_abundances_file, column_to_translat
     key_name = create_list_feature(taxonomy_file)
     percent_abundances = pd.read_csv(percent_abundances_file, sep=separator)  # Adjust the delimiter if needed
 
-    # Debugging: Check the first few rows of the DataFrame
-    print(percent_abundances.head())
-
-    dataframe_summary(percent_abundances)
+    # dataframe_summary(percent_abundances)
 
     # Make sure 'Percentile' is a correct column name
     if column_to_translate in percent_abundances.columns:

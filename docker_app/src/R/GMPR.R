@@ -15,7 +15,6 @@ dir <- "/home/microbiome/data"
 taxa_ls <- take_specific_qza(dir, filename_in)
 taxa_table <- taxa_ls$data
 GMPR_factors<- GMPR::GMPR(OTUmatrix = as.data.frame(t(taxa_table)))
-print(GMPR_factors)
 taxa_table_norm<- t(t(taxa_table)/ GMPR_factors)
 
 list_folder <- create_folder_name_and_file("6", taxatype, "gmpr_table_norm")

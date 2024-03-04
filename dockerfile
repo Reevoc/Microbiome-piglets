@@ -47,4 +47,6 @@ RUN install2.r --error readxl compositions Matrix
 RUN pip install rich
 #  install.packages("ape")
 RUN Rscript -e 'install.packages("ape", repos = "https://cloud.r-project.org/")'
+# TODO: move upper in docker file just to fast compile docker
+RUN apt-get install jq
 

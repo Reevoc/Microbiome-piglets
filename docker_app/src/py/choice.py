@@ -32,21 +32,19 @@ def metadata_choice(metadata_folder):
 
 def taxonomy_calassification_choice():
     print_explanation("Decide if you want to perform the taxonomy classification or not\n"+
-                      "N.B. You need to perfromr the taxonomy classification once afters is saved in the data folder")
+                      "N.B. You need to performed the taxonomy classification  to create the trees")
     choice = input("Do you want to perform the taxonomy classification? [y/n]")
     if choice == "y":
-        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/taxonomy_classification.sh"])
+        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/5-taxonomy_classification.sh"])
 
 def tree_creation_choice():
     print_explanation("Decide if you want to create the tree or not\n"+
                       "N.B. You need to perfromr the tree creation once afters is saved in the data folder")
     choice = input("Do you want to create the tree? [y/n]")
     if choice == "y":
-#        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/phylogenetic_tree.sh"])
+        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/phylogenetic_tree.sh"])
         export_specified_all_nwk("/home/microbiome/data/tree", "/home/microbiome/data/tree/tree.nwk")
         
-    
-
 def ANCOM_choice():
     correct_input = False
     while not correct_input:
@@ -245,23 +243,26 @@ def quality_value_choice():
 def taxonomy_choice():
     print_message("Decide if export the taxonimy file as csv to see the code and the realtive taxon")
     choice = input("Do you want to export the taxonomy file as csv? [y/n]")
-    if choice == "y":
-        extract_qzv_files("/home/microbiome/data/taxonomy")
-        directory = find_latest_directory("/home/microbiome/data/taxonomy")
-        
-        try:
-            final_directory = os.path.join("/home/microbiome/data/taxonomy", directory, "data")
-            print(final_directory)
-        except TypeError:
-            print_message("The directory is empty")
-        except FileNotFoundError:
-            print_message("The directory data is not found")
+    correct_input = False
+    while not correct_input:
+        if choice == "y":
+            extract_qzv_files("/home/microbiome/data/taxonomy")
+            directory = find_latest_directory("/home/microbiome/data/taxonomy")
+            try:
+                final_directory = os.path.join("/home/microbiome/data/taxonomy", directory, "data")
+            except TypeError:
+                print_message("The directory is empty")
+            except FileNotFoundError:
+                print_message("The directory data is not found")
 
-        for file in os.listdir(final_directory):
-            if file == "metadata.tsv":
-                subprocess.run(["mv", os.path.join(final_directory, file), "/home/microbiome/data/taxonomy/taxonomy.tsv"])
-                subprocess.run(["rm", "-rf", os.path.join("/home/microbiome/data/taxonomy", directory)])
-                    
+            for file in os.listdir(final_directory):
+                if file == "metadata.tsv":
+                    subprocess.run(["mv", os.path.join(final_directory, file), "/home/microbiome/data/taxonomy/taxonomy.tsv"])
+                    subprocess.run(["rm", "-rf", os.path.join("/home/microbiome/data/taxonomy", directory)])
+            correct_input = True
+        elif choice == "n":
+            correct_input = True
+               
                     
         
             

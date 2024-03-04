@@ -11,10 +11,10 @@ fi
 
 if [ "$1" == "genus" ];then
 variable_new="7.2"
-variable="4.2"
+variable="6.2"
 elif [ "$1" == "species" ];then
 variable_new="7.3"
-variable="4.3"
+variable="6.3"
 fi
 
 echo "--> TAXA TYPE: $1"
@@ -34,7 +34,7 @@ rm -rf "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic"
 source activate microbiome
 
 qiime diversity core-metrics \
---i-table "data/${variable}_${1}_table/${1}_${2}_table_norm.qza" \
+--i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
 --m-metadata-file "data/0_piglets_metadata/${3}" \
 --output-dir "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic" \
 --p-sampling-depth ${sampling_depth}

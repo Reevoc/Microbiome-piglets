@@ -8,41 +8,24 @@ from plot_csv import plot_feature_table_3d_histogram, create_heatmap
 import os
 import glob
 from rich_table_display import display_csv_summary_with_rich
-from utility import export_all_usefull_informations, eliminate_feature_not_true
+from utility import export_all_usefull_informations, eliminate_feature_not_true, calculate_standard_deviation
 from trasnsalte_features import translate_feature
-
+from significative_ANCOM import full_significative_analysis
+from intersecate_MaAsLin_ANCOM import intersecate_MaAsLin_ANCOM
 
 def run_denoising(path_denosing_sh, metadata_file, quality_value):
-    """
-    Run the denoising the denoising
-    """
-    dir_tree = {"1": "rooted", "2": "unrooted", "3": "no_tree"}
-    choice = input("Do you want to use as distance matrix for mImpute [rooted or urooted or notree]? [r/u/n]")
-    if choice == "r":
-        subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file, "y" , "rooted"])
-    elif choice == "u":
-        subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file, "y", "unrooted"])
-    elif choice == "n":
-        subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file, "n", "no_tree"])  
-    choice = input("Do you want create plot for the different count of sequences? [y/n]")
-    path_data = "/home/microbiome/data/"
-    
-    if choice == "y":
+    correct_input = False
+    while not correct_input: 
+        choice = input("Do you want to run the denoising? [y/n]")
+        if choice == "y":
+            try:
+                subprocess.run(["bash", path_denosing_sh, str(quality_value), metadata_file])
+                correct_input = True
+            except subprocess.CalledProcessError:
+                print_message("\nError during denoising bash launch\n")
+        elif choice == "n":
+            correct_input = True
         
-        path_row = f"{path_data}3_feature_tables/feature_table.csv"
-        path_imputed = f"{path_data}3.1_feature_table_imp/feature_table_imp.csv"
-        path_imputed_nrm = f"{path_data}3.2_feature_table_imp_nrm/feature_table_imp_nrm.csv"
-        path_imputed_lgn = f"{path_data}3.3_feature_table_imp_lgn/feature_table_imp_lgn.csv"
-        
-        for path in [path_row, path_imputed, path_imputed_nrm, path_imputed_lgn]:
-            if os.path.exists(path):
-                print(f"Creating 3D histogram for {path}")
-                df = pd.read_csv(path)
-                plot_feature_table_3d_histogram(df, os.path.join('/'.join(path.split('/')[:-1]), f'3D_histogram_{os.path.basename(path).split(".")[0]}.png'))
-                if path != path_row:
-                    print(f"Creating heatmap for {path}")
-                    create_heatmap(path_row, path, os.path.join('/'.join(path.split('/')[:-1]), f'heatmap_{os.path.basename(path).split(".")[0]}.png'))
-
         
 def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
     """Run ANCOM analysis."""
@@ -55,7 +38,7 @@ def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
         for taxa in taxa_list:
             print_message(f"ANCOM for {taxa} {norm} data")
             taxa_value = {"asv": "1", "genus": "2", "species": "3"}
-            display_csv_summary_with_rich(f"/home/microbiome/data/5.{taxa_value[taxa]}_{taxa}_table_taxafilt/summary.csv")
+            display_csv_summary_with_rich(f"/home/microbiome/data/6.{taxa_value[taxa]}_{taxa}_{norm}_table_norm/summary.csv")
             quantile_num = quantile_choice()
             try:
                 subprocess.run(
@@ -73,8 +56,10 @@ def run_ANCOM(sh_ANCOM, taxa_type, normalization, metadata_file):
                 eliminate_feature_not_true(f"/home/microbiome/data/8.{taxa_value[taxa]}_{taxa}_{norm}_DA_ANCOM/ancom.tsv", f"/home/microbiome/data/8.{taxa_value[taxa]}_{taxa}_{norm}_DA_ANCOM/percent-abundances.tsv")
                 if taxa == "asv":
                     translate_feature(f"/home/microbiome/data/taxonomy/taxonomy.tsv", f"/home/microbiome/data/8.1_asv_{norm}_DA_ANCOM/percent-abundances_filtered.csv")
+                full_significative_analysis(f"/home/microbiome/data/8.{taxa_value[taxa]}_{taxa}_{norm}_DA_ANCOM/percent-abundances_filtered.csv")
             except subprocess.CalledProcessError:
                 print_message("\nError during ANCOM bash launch\n")
+                
     
     
 def run_MASLIN(sh_MASLIN, taxa_type, normalization, metadata_file):
@@ -87,6 +72,8 @@ def run_MASLIN(sh_MASLIN, taxa_type, normalization, metadata_file):
         for taxa in taxa_types:
             try:
                 subprocess.run(["bash", sh_MASLIN, taxa, norm, metadata_file])
+                if taxa == "asv":
+                    translate_feature(f"/home/microbiome/data/taxonomy/taxonomy.tsv", f"/home/microbiome/data/9.1_asv_{norm}_DA_MaAsLin2/significant_results.tsv", "feature", "\t")
             except subprocess.CalledProcessError:
                 print_message("\nError during MaAsLin2 bash launch\n")
 
@@ -122,11 +109,37 @@ def run_get_infromations():
             except FileNotFoundError:
                 print_message(f"Error during export of {taxa} {norm} data")
                 continue
-
+            
+    print_message("Those are the standard deviation for the different tables remeber should be around 25% to let ANCOM analysis be effective")
+    for taxa, value in taxa_dict.items():
+        std, sdt_perc = calculate_standard_deviation(f"/home/microbiome/data/5.{value}_{taxa}_table_taxafilt/sample-frequency-detail.csv")
+        print(f"Standard deviation for {taxa} in table taxa filt: {std} and {sdt_perc}%")
+        for norm in normalizations:
+            std, std_perc = calculate_standard_deviation(f"/home/microbiome/data/6.{value}_{taxa}_{norm}_table_norm/sample-frequency-detail.csv")
+            print(f"Standard deviation for {taxa} in table norm {norm}: {std} and {std_perc}%")
+            
 def run_normalization(
     sh_normalization, taxa_type, normalization_type, metadata, imputation
 ):
-             
+    taxa_mapping = {
+        "asv": {
+            "script": "phylogenetic-core-analysis.sh",
+            "data_path": "/home/microbiome/data/6.1_asv_",
+            "number": "1"
+        },
+        "species": {
+            "script": "non-phylogenetic-core-analysis.sh",
+            "data_path": "/home/microbiome/data/6.3_species_",
+            "number": "3"
+        },
+        "genus": {
+            "script": "non-phylogenetic-core-analysis.sh",
+            "data_path": "/home/microbiome/data/6.2_genus_",
+            "number": "2"
+        },
+    }
+
+    taxa_types = ["asv", "genus", "species"] if taxa_type == "all" else [taxa_type] 
     try:
         if normalization_type == "all" and taxa_type == "all":
             for taxa in ["asv", "genus", "species"]:
@@ -173,7 +186,16 @@ def run_normalization(
             )
     except subprocess.CalledProcessError:
         print_message("\nError during normalization bash launch\n")
-   
+        
+    print_message("what to extract usefull information from taxa filt tables the? [y/n]")
+    choice = input()
+    if choice == "y":
+        for taxa in taxa_types:
+            try:
+                export_all_usefull_informations(f"/home/microbiome/data/5.{taxa_mapping[taxa]['number']}_{taxa}_table_taxafilt/", f"/home/microbiome/data/5.{taxa_mapping[taxa]['number']}_{taxa}_table_taxafilt/")
+            except FileNotFoundError:
+                print_message(f"Error during export of {taxa} data")
+                continue
 
 def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
     print_message("Starting metrics analysis...")
@@ -181,14 +203,17 @@ def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
         "asv": {
             "script": "phylogenetic-core-analysis.sh",
             "data_path": "/home/microbiome/data/6.1_asv_",
+            "number": "1"
         },
         "species": {
             "script": "non-phylogenetic-core-analysis.sh",
             "data_path": "/home/microbiome/data/6.3_species_",
+            "number": "2"
         },
         "genus": {
             "script": "non-phylogenetic-core-analysis.sh",
             "data_path": "/home/microbiome/data/6.2_genus_",
+            "number": "3"
         },
     }
 
@@ -219,25 +244,75 @@ def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
                 )
     except subprocess.CalledProcessError:
         print_message("\nError during metrics bash launch\n")
+    
 
-
-def run_barplot(sh_barplot, normalization_type, metadata):
-    """
-    Runs the barplot bash script.
-
-    Args:
-    sh_barplot (str): The path to the barplot bash script.
-    normalization_type (str): The normalization type.
-    metadata (str): The metadata file name.
-
-    Returns:
-    None
-    """
-    try:
-        if normalization_type == "all":
-            for norm in ["gmpr", "clr"]:
-                subprocess.run(["bash", sh_barplot, norm, metadata])
-        else:
-            subprocess.run(["bash", sh_barplot, normalization_type, metadata])
-    except subprocess.CalledProcessError:
-        print_message("\nError during barplot bash launch\n")
+def run_intersecate_ANCOM_MaAsLin():
+    start = True
+    print_explanation(f"This script will run the intersecate ANCOM MaAsLin\n",
+                      "N.B: Cause proble if both ANCOM and MaAsLin are not runned\n")
+    while start:
+        choice = input("Do you want to run the intersecate ANCOM MaAsLin? [y/n]")
+        if choice != 'y' or choice !='n':
+            start = False 
+    if choice == "y":
+        base_data_path = "/home/microbiome/data/"
+        dict_taxa_path = {  'asv':{'number': '1',
+                                 'path_ancom': '8.1_asv_gmpr_DA_ANCOM',
+                                 'path_maslin': '9.1_asv_gmpr_DA_MaAsLin2', 
+                                 'path_output': '10.1_asv_results/intersecate_MaAsLin_ANCOM.csv'},
+                            'genus':{'number': '2',
+                                     'path_ancom': '8.2_genus_gmpr_DA_ANCOM',
+                                     'path_maslin': '9.2_genus_gmpr_DA_MaAsLin2',
+                                     'path_output': '10.2_genus_results/intersecate_MaAsLin_ANCOM.csv'},
+                            'species':{'number': '3',
+                                       'path_ancom': '8.3_species_gmpr_DA_ANCOM',
+                                       'path_maslin': '9.3_species_gmpr_DA_MaAsLin2',
+                                       'path_output': '10.3_species_results/intersecate_MaAsLin_ANCOM.csv'}} 
+        try:
+            for taxa, path in dict_taxa_path.items():
+                intersecate_MaAsLin_ANCOM(f"{base_data_path}{path['path_ancom']}/percent-abundances_filtered.csv", f"{base_data_path}{path['path_maslin']}/significant_results.tsv", f"{base_data_path}{path['path_output']}")
+        except subprocess.CalledProcessError:
+            print_message(f"\nError during intersecate ANCOM MaAsLin for {taxa}\n")
+    else:
+        print_message("Intersecate ANCOM MaAsLin not run")   
+    
+def run_imputation(sh_imputation, metadata_file):
+    correct_input = False
+    while not correct_input:
+        choice = input("Do you wan tot perform the imputation step? [y/n]")
+        if choice == "y":
+            dir_tree = {"r": "rooted", "u": "unrooted", "n": "no_tree"}
+            correct_input = False
+            while not correct_input:
+                choice = input("Do you want to use as distance matrix for mImpute [rooted or urooted or notree]? [r/u/n]")
+                if choice == "r" or choice == "u":
+                    print(f"Running imputation with {dir_tree[choice]} tree")
+                    subprocess.run(["bash", sh_imputation, metadata_file, "y" ,dir_tree[choice]])
+                    correct_input = True
+                elif choice == "n":
+                    subprocess.run(["bash", sh_imputation, metadata_file, "n", dir_tree[choice]])
+                    correct_input = True
+                else:
+                    print_message("Incorrect Input")
+            correct_input = False
+            while not correct_input:
+                choice = input("Do you want create plot for the different count of sequences? [y/n]")
+                path_data = "/home/microbiome/data/"
+                if choice == "y":
+                    correct_input = True
+                    path_row = f"{path_data}3_feature_tables/feature_table.csv"
+                    path_imputed = f"{path_data}3.1_feature_table_imp/feature_table_imp.csv"
+                    path_imputed_nrm = f"{path_data}3.2_feature_table_imp_nrm/feature_table_imp_nrm.csv"
+                    path_imputed_lgn = f"{path_data}3.3_feature_table_imp_lgn/feature_table_imp_lgn.csv"
+                    for path in [path_row, path_imputed, path_imputed_nrm, path_imputed_lgn]:
+                        if os.path.exists(path):
+                            print(f"Creating 3D histogram for {path}")
+                            df = pd.read_csv(path)
+                            plot_feature_table_3d_histogram(df, os.path.join('/'.join(path.split('/')[:-1]), f'3D_histogram_{os.path.basename(path).split(".")[0]}.png'))
+                            if path != path_row:
+                                print(f"Creating heatmap for {path}")
+                                create_heatmap(path_row, path, os.path.join('/'.join(path.split('/')[:-1]), f'heatmap_{os.path.basename(path).split(".")[0]}.png'))
+                elif choice == "n":
+                    correct_input = True
+        elif choice == "n":
+            correct_input = True

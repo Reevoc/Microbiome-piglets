@@ -29,12 +29,15 @@ echo "--> SAMPLE FREQUENCY: $sample_frequency"
 echo "--> FEATURE FREQUENCY: $feature_frequency"
 
 mkdir -p "data/8.${number}_${5}_${2}_DA_ANCOM"
-
+# y vs e
 source activate microbiome
-#--i-table data/6.${number}_${5}_${2}_table_norm/${5}_${2}_table_norm.qza \
+# --i-table data/5.${number}_${5}_table_taxafilt/${5}_table_taxafilt.qza \
+# --p-where "diarrhea = 'e' OR diarrhea = 'y'" \
+# --p-where "is_sow = 'n'" \
 qiime feature-table filter-samples \
---i-table data/5.${number}_${5}_table_taxafilt/${5}_table_taxafilt.qza \
+--i-table data/6.${number}_${5}_${2}_table_norm/${5}_${2}_table_norm.qza \
 --p-min-frequency $sample_frequency \
+--m-metadata-file data/0_piglets_metadata/$3 \
 --o-filtered-table data/8.${number}_${5}_${2}_DA_ANCOM/${5}_${2}_sample_filtered.qza
 
 echo "--> FILTERING BY SAMPLE FREQUENCY"

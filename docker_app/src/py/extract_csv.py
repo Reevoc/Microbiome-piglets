@@ -11,9 +11,9 @@ def read_args():
     taxa_number = taxa_dict[taxa_type]
     return taxa_number, taxa_type, normalization, quantile_num
 
-def create_path_csv(taxa_number, taxa_type, normalization="gmpr"):
+def create_path_csv(taxa_number, taxa_type, normalization):
     """Create path to csv file"""
-    path = f"/home/microbiome/data/5.{taxa_number}_{taxa_type}_table_taxafilt/summary.csv"
+    path = f"/home/microbiome/data/6.{taxa_number}_{taxa_type}_{normalization}_table_norm/summary.csv"
     return path
 
 def take_information_csv(path_csv, quantile_num):

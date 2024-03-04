@@ -54,13 +54,11 @@ print(paste("Shape of D (distance matrix):", paste(dim(distance_matrix), collaps
 colnames(distance_matrix) <- gsub("'", "", colnames(distance_matrix))
 rownames(distance_matrix) <- gsub("'", "", rownames(distance_matrix))
 not_in_distance_matrix <- setdiff(colnames(input_matrix), colnames(distance_matrix))
-
 filtered_input_matrix <- input_matrix[, !(colnames(input_matrix) %in% not_in_distance_matrix)]
-
 common_features <- intersect(colnames(filtered_input_matrix), colnames(distance_matrix))
 filtered_input_matrix <- filtered_input_matrix[, common_features]
 filtered_distance_matrix <- distance_matrix[common_features, common_features]
-write.csv(as.data.frame(filtered_distance_matrix), file = "/home/microbiome/data/3_feature_tables/Filtered_distance_matrix.csv", col.names = FALSE)
+write.csv(as.data.frame(filtered_distance_matrix), file = "/home/microbiome/data/3_feature_tables/Filtered_distance_matrix.csv")
 write.csv(as.data.frame(t(filtered_input_matrix)), file = "/home/microbiome/data/3_feature_tables/Filtered_input_matrix.csv", col.names = FALSE)
 print("--> Reshape of the distance matrix done:")
 print(paste("Shape of input_matrix (OTU table):", paste(dim(filtered_input_matrix), collapse = " x ")))

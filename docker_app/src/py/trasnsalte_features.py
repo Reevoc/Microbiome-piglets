@@ -11,9 +11,9 @@ def create_list_feature(taxonomy_file):
             key_name[line[0]] = line[1]
     return key_name
 
-def translate_feature(taxonomy_file, percent_abundances_file, column_to_translate = 'Percentile'):
+def translate_feature(taxonomy_file, percent_abundances_file, column_to_translate = 'Percentile', separator=','):
     key_name = create_list_feature(taxonomy_file)
-    percent_abundances = pd.read_csv(percent_abundances_file, sep=',')  # Adjust the delimiter if needed
+    percent_abundances = pd.read_csv(percent_abundances_file, sep=separator)  # Adjust the delimiter if needed
 
     # Debugging: Check the first few rows of the DataFrame
     print(percent_abundances.head())
@@ -29,4 +29,4 @@ def translate_feature(taxonomy_file, percent_abundances_file, column_to_translat
                     percent_abundances[column_to_translate] = percent_abundances[column_to_translate].replace(row, value)
     else:
         print("Column 'Percentile' not found in DataFrame")
-    percent_abundances.to_csv(percent_abundances_file, index=False)
+    percent_abundances.to_csv(percent_abundances_file, index=False, sep = separator)

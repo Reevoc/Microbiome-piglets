@@ -13,7 +13,7 @@ taxatype <- commandArgs(TRUE)[1]
 print("--> CLR STARTED")
 
 # Importing
-filename_in <-data/taxonomy paste(taxatype, "_table_taxafilt", sep = "")
+filename_in <- paste(taxatype, "_table_taxafilt", sep = "")
 taxa_ls <- take_specific_qza(dir, filename_in)
 
 taxa_table <- taxa_ls$data

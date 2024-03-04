@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from message import print_message, print_explanation
 import zipfile
+import re
 
 def create_metadata_files(metadata_py):
     try:
@@ -69,6 +70,14 @@ def export_csv(base_path, output_path):
             subprocess.run(["mv", csv_file, output_path])
     except:
         print_message("No csv file found")
+        
+def export_biom(base_path, output_path):
+    try:
+        biom_files = glob.glob(os.path.join(base_path, '*.biom'))
+        for biom_file in biom_files:
+            subprocess.run(["mv", biom_file, output_path])
+    except:
+        print_message("No biom file found")
 
 def export_tsv(base_path, output_path):
     try:
@@ -95,33 +104,64 @@ def export_all_usefull_informations(base_path, output_path):
         print_message("No directory created")
         return False
     
+def export_biom_information(base_path, output_path):
+    extract_qza_files(base_path)
+    directory_created = find_latest_directory(base_path)
+    if directory_created is not None:
+        export_biom(os.path.join(base_path, directory_created, "data"), output_path)
+        eliminate_subfolder(base_path)
+    else:
+        print_message("No directory created")
+        return False
+    
 def export_specified_all_nwk(base_path, output_path):
     extract_qza_files(base_path)
     dirs = find_all_directory(base_path)
-    list_nwk = ["_","rooted","unrooted","_"]
-    for directory, nwk in zip(dirs, list_nwk):
+    for directory in dirs:
         last_name = output_path.split("/")[-1].split(".")[0]
-        last_name_modified = last_name + "_" + nwk
-        output_path_new = output_path.split("/")[:-1]
-        output_path_new = "/".join(output_path_new)
+        tree_file_path = os.path.join(base_path, directory, "data", "tree.nwk")
         try:
-            export_nwk(os.path.join(base_path, directory, "data"), os.path.join(output_path_new, last_name_modified + ".nwk"))
-        except:
-            print_message("No nwk file found")
+            with open(tree_file_path, "r") as file:
+                text = file.read()
+            if text.startswith("(("):
+                print("--> Find rooted tree")
+                last_name_modified = last_name + "_" + "rooted"
+            if text.startswith("((("):
+                print("--> Find unrooted tree")
+                last_name_modified = last_name + "_" + "unrooted"
+            output_path_new = "/".join(output_path.split("/")[:-1])
+            try:
+                export_nwk(os.path.join(base_path, directory, "data"), os.path.join(output_path_new, last_name_modified + ".nwk"))
+            except:
+                print_message("Failed to export nwk file")
+                continue
+
+        except FileNotFoundError:
+            print_message(f"Tree file not found in {tree_file_path}, skipping.")
             continue
+
     eliminate_subfolder(base_path)
+
+
     
 def eliminate_feature_not_true(path_csv_ancom, path_perc_abbundances):
     ancom_test_W = pd.read_csv(path_csv_ancom, sep='\t')
     perc_abb = pd.read_csv(path_perc_abbundances, sep='\t')
-
     significant_features = ancom_test_W[ancom_test_W['Reject null hypothesis'] == True]['Unnamed: 0'].tolist()
-    
     filtered_perc_abb = perc_abb[perc_abb['Percentile'].isin(significant_features)]
     output_path = path_perc_abbundances.replace('.tsv', '_filtered.csv')
-    filtered_perc_abb.to_csv(output_path, index=True)
+    first_row = perc_abb.iloc[[0]]
+    filtered_perc_abb = pd.concat([first_row, filtered_perc_abb], ignore_index=True)
 
+    filtered_perc_abb.to_csv(output_path, index=False)  
     return filtered_perc_abb
+
+def calculate_standard_deviation(path_csv):
+    data = pd.read_csv(path_csv)
+    std_dev = data.iloc[:, 1].std()
+    mean = data.iloc[:, 1].mean()
+    std_dev_percent = (std_dev / mean) * 100
+    return std_dev, std_dev_percent
 
 def dataframe_summary(df):
     """
@@ -152,5 +192,56 @@ def dataframe_summary(df):
     print("\nLast 5 rows:")
     print(df.tail())
 
+def natural_sort_key(s, _nsre=re.compile("([0-9]+)")):
+    return [
+        int(text) if text.isdigit() else text.lower() for text in re.split(_nsre, s)
+    ]
 
-            
+
+def find_qzv_files(base_path):
+    qzv_files = {}
+    for root, dirs, files in os.walk(base_path):
+        dirs.sort(key=natural_sort_key)  # Sort directories numerically
+        for file in files:
+            if file.endswith(".qzv"):
+                dir_key = root.replace(base_path, "").strip("/")
+                if dir_key not in qzv_files:
+                    qzv_files[dir_key] = []
+                qzv_files[dir_key].append(file)
+    return qzv_files
+
+
+def print_tree(qzv_files):
+    count = -1
+    new_dict = {}
+    for dir_key, files in sorted(
+        qzv_files.items(), key=lambda x: natural_sort_key(x[0])
+    ):
+        print(f"|{Style.BRIGHT}{Fore.GREEN}{dir_key}/{Style.RESET_ALL}")
+        print("|")
+        for file in sorted(files, key=natural_sort_key):
+            count += 1
+            if isinstance(file, str):
+                print(
+                    f"|___________{Fore.LIGHTCYAN_EX}{count}_{Fore.LIGHTBLUE_EX}{file}{Style.RESET_ALL}"
+                )
+                new_dict[count] = []
+                new_key = f"{dir_key}/{file}"
+                new_dict[count].append(new_key)
+    return new_dict
+
+
+def extract_number(s):
+    if "." in s:
+        s = s.replace(".", "")
+        return int(s)
+    else:
+        return int(s + "0")
+
+
+def get_file_from_tree(current_dict, keys):
+    for key in keys:
+        current_dict = current_dict.get(key, {})
+        if not isinstance(current_dict, dict):
+            return current_dict
+    return None

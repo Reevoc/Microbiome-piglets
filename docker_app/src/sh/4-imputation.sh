@@ -18,7 +18,7 @@ Rscript docker_app/src/R/mBImpute.R $1 $2 $3
 
 echo "--> END IMPUTATION"
 
-source activate microbiome
+
 
 echo "--> CONVERTING .BIOM TO .QZA"
 
@@ -57,4 +57,4 @@ qiime feature-table summarize \
   --o-visualization data/3.3_feature_table_imp_lgn/feature_table_imp_lgn.qzv \
   --m-sample-metadata-file "data/0_piglets_metadata/${1}"
 
-conda deactivate
+

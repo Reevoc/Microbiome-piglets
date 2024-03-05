@@ -196,7 +196,7 @@ def quantile_choice():
 def MASLIN_choice():
     correct_input = False
     print_message(
-        "If you want to modify random and fixed effect you can directly change the diff_abb_MaAsLin2.sh file"
+        "If you want to modify random and fixed effect you can directly change the 10-diff_abb_MaAsLin2.sh file"
     )
     while not correct_input:
         print_explanation("Do you want to run MaAsLin2 in qiime2? [y/n]")

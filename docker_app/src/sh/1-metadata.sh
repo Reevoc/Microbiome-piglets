@@ -9,7 +9,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-source activate microbiome
+
 
 metadata_name="${1::-4}"
 
@@ -17,7 +17,7 @@ qiime metadata tabulate \
     --m-input-file ./${1} \
     --o-visualization ./${metadata_name}.qzv
 
-conda deactivate
+
 
 echo "--> END METADATA SCRIPT"
 

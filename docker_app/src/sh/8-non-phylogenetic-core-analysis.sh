@@ -31,7 +31,7 @@ echo "--> COMPUTING ALPHA AND BETA DIVERSITY METRICS CORE METRICS NON-PHYLOGENET
 
 
 rm -rf "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic"
-source activate microbiome
+
 
 qiime diversity core-metrics \
 --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
@@ -61,7 +61,7 @@ qiime diversity alpha-group-significance \
 --m-metadata-file "data/0_piglets_metadata/${3}" \
 --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/observed_features_vector.qzv"
 
-conda deactivate
+
 
 cd data/${variable_new}_${1}_${2}_core_metrics_non-phylogenetic/
 

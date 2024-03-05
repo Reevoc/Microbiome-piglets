@@ -2,7 +2,7 @@
 
 cd /home/microbiome
 
-source activate microbiome
+
 
 echo "--> START TAXONOMY CLASSIFICATION"
 
@@ -18,6 +18,6 @@ qiime metadata tabulate \
 --m-input-file data/taxonomy/taxonomy.qza \
 --o-visualization data/taxonomy/taxonomy.qzv
 
-conda deactivate
+
 
 

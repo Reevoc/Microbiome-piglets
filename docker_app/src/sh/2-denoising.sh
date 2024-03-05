@@ -2,7 +2,7 @@
 
 cd /home/microbiome
 
-source activate microbiome
+
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <quality_value> <metadata>"
@@ -63,7 +63,7 @@ qiime metadata tabulate \
   --m-input-file data/3_feature_tables/denoising_stats.qza \
   --o-visualization data/3_feature_tables/denoising_stats.qzv
 
-conda deactivate
+
 
 echo "--> END DENOISING"
 

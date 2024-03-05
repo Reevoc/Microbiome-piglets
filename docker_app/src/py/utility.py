@@ -259,3 +259,19 @@ def get_file_from_tree(current_dict, keys):
         if not isinstance(current_dict, dict):
             return current_dict
     return None
+
+def attach_alpha_metadata(metadata_file_path, path_to_folder):
+    metadata = pd.read_csv(metadata_file_path, sep='\t', index_col=0)
+    for filename in os.listdir(path_to_folder):
+        if filename.endswith(".tsv"):
+            filepath = os.path.join(path_to_folder, filename)
+            alpha_data = pd.read_csv(filepath, sep='\t', index_col=0)
+            column_name = filename[:-4]
+            if column_name in alpha_data.columns:
+                metadata = metadata.join(alpha_data[[column_name]], how='left')
+            else:
+                print(f"Column '{column_name}' not found in {filename}")
+    metadata.to_csv(os.path.join(path_to_folder, 'updated_metadata.tsv'), sep='\t')
+
+    print("Metadata updated successfully.")
+    

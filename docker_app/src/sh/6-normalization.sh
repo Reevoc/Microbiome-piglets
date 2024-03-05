@@ -4,7 +4,7 @@ echo "--> START NORMALIZATION SCRIPT"
 
 cd /home/microbiome
 
-source activate microbiome
+
 
 if [ "$#" -ne 4 ]; then
     echo "Usage: $0 <taxa_type> <normalization_type> <metadata> <imputation>"
@@ -113,8 +113,6 @@ mkdir -p data/5.${variable}_$1_table_taxafilt
         --o-visualization data/5.${variable}_$1_table_taxafilt/$1_table_taxafilt.qzv \
         --m-sample-metadata-file data/0_piglets_metadata/$3
 
-conda deactivate
-
 rm -rf data/6.${variable}_$1_$2_table_norm
 mkdir -p data/6.${variable}_$1_$2_table_norm
 
@@ -127,8 +125,6 @@ if [ "$2" == "clr" ]; then
     echo "--> LAUNCHING CLR"
     Rscript docker_app/src/R/CLR.R $1
 fi
-
-source activate microbiome
 
 echo "--> CONVERTING $1_table_norm.biom to $1_$2_table_norm.qza"
 
@@ -147,11 +143,11 @@ qiime feature-table summarize \
 
 echo "--> SUMMARIZED IN $1_$2_table_norm.qzv"
 
-conda deactivate
-
 echo "--> LAUNCH PYTHON SCRIPT FOR FREQUENCY DATA"
 
 cd /home/microbiome/docker_app/src/py
 python3 frequency_data.py $1 $2 
 
 echo "--> END NORMALIZATION SCRIPT"
+
+

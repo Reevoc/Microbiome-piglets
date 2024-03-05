@@ -9,7 +9,7 @@ if [ "$#" -ne 4 ]; then
     exit 1
 fi
 
-source activate microbiome
+
 
 variable_new="7.1"
 variable="6.1"
@@ -63,7 +63,14 @@ qiime diversity alpha-rarefaction \
   --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic/${1}_${2}_diversity_alpha_rerefaction.qzv" \
   --p-max-depth ${sampling_depth}
 
-conda deactivate
+qiime diversity beta \
+  --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
+  --p-metric "braycurtis" \
+  --o-distance-matrix "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic/braycurtis_distance_matrix.qza"
+
+qiime tools export \
+  --input-path "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic/braycurtis_distance_matrix.qza" \
+  --output-path "data/${variable_new}_${1}_${2}_core_metrics_phylogenetic"
 
 cd data/${variable_new}_${1}_${2}_core_metrics_phylogenetic
 

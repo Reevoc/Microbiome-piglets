@@ -30,6 +30,5 @@ def main():
     sample_frequency, feature_frequency = take_information_csv(path_csv, quantile)
     print(sample_frequency, feature_frequency)
 
-
 if __name__ == "__main__":
     main()

@@ -7,7 +7,7 @@ echo "--> PHYLOGENETIC TREE SCRIPT"
 rm -rf data/tree
 mkdir -p data/tree
 
-source activate microbiome
+
 
 qiime phylogeny align-to-tree-mafft-fasttree \
 --i-sequences data/3_feature_tables/feature_sequences.qza \
@@ -16,6 +16,6 @@ qiime phylogeny align-to-tree-mafft-fasttree \
 --o-tree data/tree/unrooted-tree.qza \
 --o-rooted-tree data/tree/rooted-tree.qza
 
-conda deactivate
+
 
 echo "--> PHYLOGENETIC TREE SCRIPT FINISHED"

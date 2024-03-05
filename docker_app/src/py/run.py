@@ -8,10 +8,10 @@ from plot_csv import plot_feature_table_3d_histogram, create_heatmap
 import os
 import glob
 from rich_table_display import display_csv_summary_with_rich
-from utility import export_all_usefull_informations, eliminate_feature_not_true, calculate_standard_deviation
+from utility import export_all_usefull_informations, eliminate_feature_not_true, calculate_standard_deviation, attach_alpha_metadata
 from trasnsalte_features import translate_feature
 from significative_ANCOM import full_significative_analysis
-from intersecate_MaAsLin_ANCOM import intersecate_MaAsLin_ANCOM
+from intersecate_MaAsLin_ANCOM import intersecate_MaAsLin_ANCOM, ANCOM_filtered_features, MaASLin2_filtered_features
 
 def run_denoising(path_denosing_sh, metadata_file, quality_value):
     correct_input = False
@@ -131,17 +131,17 @@ def run_normalization(
     
     taxa_mapping = {
         "asv": {
-            "script": "phylogenetic-core-analysis.sh",
+            "script": "7-phylogenetic-core-analysis.sh",
             "data_path": "/home/microbiome/data/6.1_asv_",
             "number": "1"
         },
         "species": {
-            "script": "non-phylogenetic-core-analysis.sh",
+            "script": "8-non-phylogenetic-core-analysis.sh",
             "data_path": "/home/microbiome/data/6.3_species_",
             "number": "3"
         },
         "genus": {
-            "script": "non-phylogenetic-core-analysis.sh",
+            "script": "8-non-phylogenetic-core-analysis.sh",
             "data_path": "/home/microbiome/data/6.2_genus_",
             "number": "2"
         },
@@ -223,17 +223,17 @@ def run_metrics(sh_metrics, taxa_type, normalization_type, metadata):
             print_message("-->Starting metrics analysis:")
             taxa_mapping = {
                 "asv": {
-                    "script": "phylogenetic-core-analysis.sh",
+                    "script": "7-phylogenetic-core-analysis.sh",
                     "data_path": "/home/microbiome/data/6.1_asv_",
                     "number": "1"
                 },
                 "species": {
-                    "script": "non-phylogenetic-core-analysis.sh",
+                    "script": "8-non-phylogenetic-core-analysis.sh",
                     "data_path": "/home/microbiome/data/6.3_species_",
                     "number": "2"
                 },
                 "genus": {
-                    "script": "non-phylogenetic-core-analysis.sh",
+                    "script": "8-non-phylogenetic-core-analysis.sh",
                     "data_path": "/home/microbiome/data/6.2_genus_",
                     "number": "3"
                 },
@@ -275,29 +275,35 @@ def run_intersecate_ANCOM_MaAsLin():
                       "N.B: Cause proble if both ANCOM and MaAsLin are not runned\n")
     while start:
         choice = input("Do you want to run the intersecate ANCOM MaAsLin? [y/n]")
-        if choice != 'y' or choice !='n':
-            start = False 
-    if choice == "y":
-        base_data_path = "/home/microbiome/data/"
-        dict_taxa_path = {  'asv':{'number': '1',
-                                 'path_ancom': '8.1_asv_gmpr_DA_ANCOM',
-                                 'path_maslin': '9.1_asv_gmpr_DA_MaAsLin2', 
-                                 'path_output': '10.1_asv_results/intersecate_MaAsLin_ANCOM.csv'},
-                            'genus':{'number': '2',
-                                     'path_ancom': '8.2_genus_gmpr_DA_ANCOM',
-                                     'path_maslin': '9.2_genus_gmpr_DA_MaAsLin2',
-                                     'path_output': '10.2_genus_results/intersecate_MaAsLin_ANCOM.csv'},
-                            'species':{'number': '3',
-                                       'path_ancom': '8.3_species_gmpr_DA_ANCOM',
-                                       'path_maslin': '9.3_species_gmpr_DA_MaAsLin2',
-                                       'path_output': '10.3_species_results/intersecate_MaAsLin_ANCOM.csv'}} 
-        try:
+        if choice== 'y':
+            start = False
+            base_data_path = "/home/microbiome/data/"
+            dict_taxa_path = {  'asv':{'number': '1',
+                                     'path_ancom': '8.1_asv_gmpr_DA_ANCOM',
+                                     'path_maslin': '9.1_asv_gmpr_DA_MaAsLin2', 
+                                     'path_output': '10.1_asv_results/intersecate_MaAsLin_ANCOM.csv'},
+                                'genus':{'number': '2',
+                                         'path_ancom': '8.2_genus_gmpr_DA_ANCOM',
+                                         'path_maslin': '9.2_genus_gmpr_DA_MaAsLin2',
+                                         'path_output': '10.2_genus_results/intersecate_MaAsLin_ANCOM.csv'},
+                                'species':{'number': '3',
+                                           'path_ancom': '8.3_species_gmpr_DA_ANCOM',
+                                           'path_maslin': '9.3_species_gmpr_DA_MaAsLin2',
+                                           'path_output': '10.3_species_results/intersecate_MaAsLin_ANCOM.csv'}} 
             for taxa, path in dict_taxa_path.items():
-                intersecate_MaAsLin_ANCOM(f"{base_data_path}{path['path_ancom']}/percent-abundances_filtered.csv", f"{base_data_path}{path['path_maslin']}/significant_results.tsv", f"{base_data_path}{path['path_output']}")
-        except subprocess.CalledProcessError:
-            print_message(f"\nError during intersecate ANCOM MaAsLin for {taxa}\n")
-    else:
-        print_message("Intersecate ANCOM MaAsLin not run")   
+                try:
+                    ancom_path = f"{base_data_path}{path['path_ancom']}/percent-abundances_filtered.csv"
+                    maslin_path = f"{base_data_path}{path['path_maslin']}/significant_results.tsv"
+                    output_path = f"{base_data_path}{path['path_output']}"
+                    results_ANCOM = ANCOM_filtered_features(ancom_path)
+                    results_MaAsLin = MaASLin2_filtered_features(maslin_path)
+                    intersecate_MaAsLin_ANCOM(results_MaAsLin, results_ANCOM, output_path)
+                    print(f"Intersect and Union processed for {taxa}.")
+                except Exception as e:
+                    print(f"Error during intersecate ANCOM MaAsLin for {taxa}: {e}")
+        elif choice== 'n':
+            start = False
+            print("Intersecate ANCOM MaAsLin not run")   
     
 def run_imputation(sh_imputation, metadata_file):
     correct_input = False
@@ -339,3 +345,68 @@ def run_imputation(sh_imputation, metadata_file):
                     correct_input = True
         elif choice == "n":
             correct_input = True
+            
+def run_longitudinal_analysis(sh_extraction, sh_longitudinal, metadata_file):
+    correct_input = False
+    path_to_meteadata = "/home/microbiome/data/0_piglets_metadata/" + metadata_file
+    dict_alpha_metrics = {
+    'asv': {
+        'path': '/home/microbiome/data/7.1_asv_gmpr_core_metrics_phylogenetic/',
+        'path_longitudinal': '/home/microbiome/data/11.1_asv_gmpr_core_metrics_longitudinal/',
+        'column_alpha_metadata': {
+            'shannon': 'shannon_entropy',
+            'observed': 'observed_features',
+            'faith_pd': 'faith_pd',
+            'evenness': 'pielou_evenness',
+        }
+    },
+    'genus': {
+        'path': '/home/microbiome/data/7.2_genus_gmpr_core_metrics_non-phylogenetic/',
+        'path_longitudinal': '/home/microbiome/data/11.2_genus_gmpr_core_metrics_longitudinal/',
+        'column_alpha_metadata': {
+            'shannon': 'shannon_entropy',
+            'observed': 'observed_features',
+            'evenness': 'pielou_evenness',
+        }
+    },
+    'species': {
+        'path': '/home/microbiome/data/7.3_species_gmpr_core_metrics_non-phylogenetic/',
+        'path_longitudinal': '/home/microbiome/data/11.3_species_gmpr_core_metrics_longitudinal/',
+        'column_alpha_metadata': {
+            'shannon': 'shannon_entropy',
+            'observed': 'observed_features',
+            'evenness': 'pielou_evenness',
+        }
+    }
+}
+    #while not correct_input:
+    #    choice = input("Do you want to extract tsv for the longitudinal analysis? [y/n]")
+    #    if choice == "y":
+    #        correct_input = True
+    #        try:
+    #            for taxa in dict_alpha_metrics.keys():
+    #                subprocess.run(["bash", sh_extraction, taxa, "gmpr"])
+    #        except subprocess.CalledProcessError:
+    #            print_message("\nError during extraction bash launch\n")
+    #        try:
+    #            for dictionary in dict_alpha_metrics.values():
+    #                attach_alpha_metadata(path_to_meteadata, dictionary['path_longitudinal'])
+    #        except Exception as e:
+    #            print(f"Error during attach alpha metadata: {e}")
+    #    elif choice == "n":
+    #        correct_input = True 
+    correct_input = False         
+    while not correct_input:
+        choice = input("Do you want to run the longitudinal analysis? [y/n]")
+        if choice == "y":
+            correct_input = True
+            try:
+                for key, value in dict_alpha_metrics.items():
+                    for metric in value['column_alpha_metadata']:
+                        subprocess.run(["bash", sh_longitudinal, key, "gmpr", value['column_alpha_metadata'][metric]])
+            except subprocess.CalledProcessError:
+                print_message("\nError during longitudinal bash launch\n")          
+        elif choice == "n":
+            correct_input = True     
+        
+   

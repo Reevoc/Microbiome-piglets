@@ -109,7 +109,7 @@ perform_pca(metadata)
 
 metadata_selected = metadata[["Animal ID", "sow"]].copy()
 
-metadata["time"] = "categorical"
+metadata["time"] = "numeric"
 metadata["sow_child"] = "categorical"
 metadata["sow"] = "categorical"
 
@@ -122,7 +122,7 @@ for index, row in metadata_selected.iterrows():
 
     # Extract sow, time, and sow_child from the Animal ID
     sow_mother = animal_id_parts[0]
-    time = animal_id_parts[-1]
+    time = animal_id_parts[-1][1]
     sow_son = "_".join(animal_id_parts[:2])
 
     # Update the new columns in metadata DataFrame

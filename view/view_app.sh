@@ -8,6 +8,6 @@ cd /home/piermarco/Documents/github/microbiome_piglets/view/py
 
 python3 view.py
 
-# conda deactivate
+# 
 
 echo View app deactivated

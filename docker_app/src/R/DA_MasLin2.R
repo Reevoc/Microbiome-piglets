@@ -55,20 +55,6 @@ result <- filter_metadata_and_counts(path_metadata, filename_in, column_name, li
 filtered_metadata <- result$FilteredMetadata
 filtered_count_table <- t(result$FilteredCountTable)
 
-#print("--> Dimensions of the filtered metadata:")
-#print(dim(filtered_metadata))
-#print("--> First few rows of metadata:")
-#print(rownames(filtered_metadata)[1:5])
-#print("--> First few columns of metadata:")
-#print(colnames(filtered_metadata)[1:5]) 
-#
-#print("--> Dimensions of the filtered count table:")
-#print(dim(filtered_count_table))
-#print("--> First few rows of count table:")
-#print(rownames(filtered_count_table)[1:5])
-#print("--> First few columns of count table:")
-#print(colnames(filtered_count_table)[1:5])
-
 print("--> Running Maaslin2")
 fit_data <- Maaslin2(
     input_data = filtered_count_table,
@@ -78,7 +64,7 @@ fit_data <- Maaslin2(
     random_effects = list_random, # if you have any random effects
     #normalization = "NONE", # or your chosen normalization method
     reference = c("diarrhea,n"), # setting 'n' as the reference level for 'diarrhea'
-    max_significance = 0.01
+    max_significance = 0.0005
 )
 
 print("--> Differential Abundance analysis ENDED")

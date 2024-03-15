@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # %%
-# path_name = "/home/piermarco/Documents/Thesis/data/0_piglets_metadata/"
+#path_name = "/home/piermarco/Documents/github/microbiome_piglets/data/0_piglets_metadata/"
 path_name = "/home/microbiome/data/0_piglets_metadata/"
 metadta_file = os.path.join(path_name, "piglets_metadata.tsv")
 metadata = pd.read_csv(metadta_file, sep="\t")
@@ -107,8 +107,20 @@ perform_pca(metadata)
 #
 # %%
 
+if 'serial' not in metadata.columns:
+    metadata['serial'] = range(1, len(metadata) + 1)
+
+# Check if 'Animal ID' and 'sow' columns exist
+if 'Animal ID' in metadata.columns and 'sow' in metadata.columns:
+    metadata_selected = metadata[["Animal ID", "sow"]].copy()
+else:
+    # If columns don't exist, print an error message or take appropriate action
+    print("Error: 'Animal ID' and/or 'sow' columns not found in the DataFrame.")
+
+# Existing code to process and modify columns in metadata
 metadata_selected = metadata[["Animal ID", "sow"]].copy()
 
+#metadata["time"] = "categorical"
 metadata["time"] = "numeric"
 metadata["sow_child"] = "categorical"
 metadata["sow"] = "categorical"
@@ -116,22 +128,37 @@ metadata["sow"] = "categorical"
 # Iterate over rows for processing
 for index, row in metadata_selected.iterrows():
     if index == 0:
-        continue  # Skip the first row if it's just a header or non-data
+        continue  # Skip the first row it's just a header or non-data
 
     animal_id_parts = row["Animal ID"].split("_")
 
     # Extract sow, time, and sow_child from the Animal ID
     sow_mother = animal_id_parts[0]
-    time = animal_id_parts[-1][1]
+    time_numerical = animal_id_parts[-1][1]
+    time_categorical = "T" + time_numerical
     sow_son = "_".join(animal_id_parts[:2])
 
     # Update the new columns in metadata DataFrame
-    metadata.at[index, "time"] = time
+    metadata.at[index, "time"] = time_numerical
     metadata.at[index, "sow_child"] = sow_son
     metadata.at[index, "sow"] = sow_mother
 
 # Drop the original 'Animal ID' and 'sow' columns
 metadata.drop(["Animal ID", "sow"], axis=1, inplace=True)
+
+# Number of unique serials required
+unique_serials = len(metadata[metadata['time'] == '0'])
+
+# Assigning serial numbers for time 1 and 2
+metadata.loc[metadata['time'] == '0', 'serial'] = range(1, unique_serials + 1)
+metadata.loc[metadata['time'] == '1', 'serial'] = range(1, unique_serials + 1)
+metadata.loc[metadata['time'] == '2', 'serial'] = range(1, unique_serials + 1)
+
+# Displaying the first 50 rows of the dataframe after correction
+corrected_data_head_50 = metadata.head(50)
+corrected_data_head_50
+
+
 
 
 # %% [markdown]

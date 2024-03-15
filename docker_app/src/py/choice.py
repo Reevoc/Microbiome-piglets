@@ -42,7 +42,7 @@ def tree_creation_choice():
                       "N.B. You need to perfromr the tree creation once afters is saved in the data folder")
     choice = input("Do you want to create the tree? [y/n]")
     if choice == "y":
-        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/phylogenetic_tree.sh"])
+        subprocess.run(["bash", "/home/microbiome/docker_app/src/sh/3-phylogenetic_tree.sh"])
         export_specified_all_nwk("/home/microbiome/data/tree", "/home/microbiome/data/tree/tree.nwk")
         
 def ANCOM_choice():

@@ -2,14 +2,16 @@ import pandas as pd
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+import sys
 
 def load_and_process_matrix(file_path, sep):
+    
     matrix = pd.read_csv(file_path, sep=sep, header=0)
     if file_path.endswith('.tsv'):
         matrix = matrix.set_index(matrix.columns[0])
     return matrix
 
-def calculate_graph_statistics(G):
+def calculate_graph_statistics(G, title):
     if nx.is_empty(G):
         print("Graph is empty. No statistics to calculate.")
         return
@@ -45,6 +47,8 @@ def calculate_graph_statistics(G):
 
     closeness_centrality = nx.closeness_centrality(G)
     print("Highest closeness centrality:", max(closeness_centrality.values()))
+    
+    
 
 
 def draw_custom_graph(distance_matrix, title, threshold):
@@ -84,25 +88,31 @@ def draw_custom_graph(distance_matrix, title, threshold):
 
         plt.axis("off")
         plt.title(title)
-        plt.savefig("graph.png")
+        
+        plt.savefig(title + '.png')
         plt.show()
     else:
         print("Graph is empty. No nodes to draw.")
 
 def main():
-    # Load and process the distance matrix
-    distance_tree_path = '/home/piermarco/Documents/github/microbiome_piglets/data/3_feature_tables/Distance_matrix.csv'
-    distance_matrix_asv = '/home/piermarco/Documents/github/microbiome_piglets/data/7.1_asv_gmpr_core_metrics_phylogenetic/distance-matrix.tsv'
-    distance_matrix_genus = '/home/piermarco/Documents/github/microbiome_piglets/data/7.2_genus_gmpr_core_metrics_phylogenetic/distance-matrix.tsv'
-    distance_matrix_species = '/home/piermarco/Documents/github/microbiome_piglets/data/7.3_species_gmpr_core_metrics_phylogenetic/distance-matrix.tsv'
+    
+    metadata = sys.argv[1]
+    
+    path_docker = '/home/microbiome/data'
+    distance_tree_path = path_docker + '/3_feature_tables/Distance_matrix.csv'
+    distance_matrix_asv = path_docker + '/7.1_asv_gmpr_core_metrics_phylogenetic/distance-matrix.tsv'
+    distance_matrix_genus = path_docker + '/7.2_genus_gmpr_core_metrics_phylogenetic/distance-matrix.tsv'
+    distance_matrix_species = path_docker + '/7.3_species_gmpr_core_metrics_phylogenetic/distance-matrix.tsv'
+    # create folder to save the images
+    folder_path = path_docker + '/13_network_analysis/'
     distance_tree = load_and_process_matrix(distance_tree_path, ',')
-    draw_custom_graph(distance_tree, 'Distance Tree', 0.99)
+    draw_custom_graph(distance_tree, folder_path + 'distance-tree', 0.99)
     distanc_matrix_asv = load_and_process_matrix(distance_matrix_asv, '\t')
-    draw_custom_graph(distanc_matrix_asv, 'Distance Matrix', 0.25 )
+    draw_custom_graph(distanc_matrix_asv, folder_path + 'distance-sample-asv', 0.25 )
     distance_matrix_genus = load_and_process_matrix(distance_matrix_genus, '\t')
-    draw_custom_graph(distance_matrix_genus, 'Distance Matrix', 0.25 )
+    draw_custom_graph(distance_matrix_genus, folder_path + 'distance-sample-genus', 0.25 )
     distance_matrix_species = load_and_process_matrix(distance_matrix_species, '\t')
-    draw_custom_graph(distance_matrix_species, 'Distance Matrix', 0.25 )
+    draw_custom_graph(distance_matrix_species, folder_path + 'distance-sample-species', 0.25 )
     
 
 if __name__ == "__main__":

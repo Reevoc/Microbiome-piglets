@@ -1,5 +1,6 @@
 {
     "id": "serial",
-    "group": "diarrhea",
-    "longitudinal": "time"
+    "group": "is_sow",
+    "longitudinal": "time",
+    "random":"is_sow,sex"
 }

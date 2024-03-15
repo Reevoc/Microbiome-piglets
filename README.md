@@ -66,7 +66,7 @@ Follow these steps to set up the Docker environment:
    # version below to check if stable
    docker run -e PASSWORD=pass -p 8787:8787 -d -v $(pwd):/home/microbiome -u $(id -u):$(id -g) microbiome_piglets
    docker run -it -u $(id -u):$(id -g) -v "$(pwd)":/home/microbiome microbiome_piglets /bin/bash
-
+   docker run -it -v ./:/home/microbiome microbiome_piglets /usr/bin/zsh
 
    ```
 

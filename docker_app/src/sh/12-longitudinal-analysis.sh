@@ -16,6 +16,7 @@ fi
 id=$(jq -r '.id' "$json_file")
 group=$(jq -r '.group' "$json_file")
 longitudinal=$(jq -r '.longitudinal' "$json_file")
+random=$(jq -r '.random' "$json_file")
 
 if [ "$1" == "genus" ];then
 variable_new="11.2"
@@ -44,17 +45,37 @@ echo "--> GROUP COLUMN: ${group}"
 echo "--> LONGITUDINAL COLUMN: ${longitudinal}"
 echo "--> ID COLUMN: ${id}"
 
+# if the the directory does exist just skip the process 
+echo "--> LONGITUDINAL ANALYSIS CORE METRICS"
 qiime longitudinal linear-mixed-effects \
     --i-table "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/${1}_${2}_table_relative_frequency.qza" \
     --m-metadata-file "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/updated_metadata.tsv" \
     --p-metric ${3} \
     --p-state-column ${longitudinal} \
     --p-individual-id-column ${id} \
+    --p-group-columns ${group}\
     --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/${3}_linear-mixed-effects.qzv"
 
-echo "--> LONGITUDINAL ANALYSIS FEATURE VOLATILITY"
+echo "--> LONGITUDINAL ANALYSIS VOLATILITY"
+# just skip if already exists
+if [ -d "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/plot_volatility.qzv" ]; then
+echo "Directory data/${variable_new}_${1}_${2}_core_metrics_longitudinal/plot_volatility.qzv already exists"
+else
+qiime longitudinal volatility \
+    --i-table "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/${1}_${2}_table_relative_frequency.qza" \
+    --m-metadata-file "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/updated_metadata.tsv" \
+    --p-default-metric ${3} \
+    --p-default-group-column ${group} \
+    --p-state-column ${longitudinal} \
+    --p-individual-id-column ${id} \
+    --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/plot_volatility.qzv"
+fi
 
-echo "rm -rf data/${1}_${2}_${longitudinal}_volatility"
+if [ -d "data/${variable_vol}_${1}_${2}_${longitudinal}_volatility" ]; then
+    echo "Directory data/${variable_vol}_${1}_${2}_${longitudinal}_volatility already exists"
+
+else
+echo "--> LONGITUDINAL ANALYSIS FEATURE VOLATILITY"
 
 qiime longitudinal feature-volatility \
     --i-table "data/${variable}_${1}_${2}_table_norm/${1}_${2}_table_norm.qza" \
@@ -64,9 +85,9 @@ qiime longitudinal feature-volatility \
     --p-n-estimators 10 \
     --p-random-state 17 \
     --output-dir "data/${variable_vol}_${1}_${2}_${longitudinal}_volatility/"
+fi
 
-echo "--> LONGITUDINAL ANALYSIS NMIT"
-
+echo "--> NOT ABLE TO RUN LONGITUDINAL ANALYSIS NMIT UNSUFFICIENT MEMORY"
 #qiime longitudinal nmit \
 #    --i-table "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/${1}_${2}_table_relative_frequency.qza" \
 #    --m-metadata-file "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/updated_metadata.tsv" \
@@ -94,4 +115,5 @@ echo "--> LONGITUDINAL ANALYSIS NMIT"
 #    --i-pcoa "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/${3}_nmit_pcoa.qza" \
 #    --m-metadata-file "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/updated_metadata.tsv" \
 #    --o-visualization "data/${variable_new}_${1}_${2}_core_metrics_longitudinal/${3}_nmit_pcoa.qzv" \
-#
+
+echo "--> END LONGITUDINAL ANALYSIS"

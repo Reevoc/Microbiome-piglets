@@ -28,16 +28,16 @@ metadata = metadata_choice(metadata_folder) # choice the metadata file to use
 #taxonomy_choice()# create the taxonomy.tsv file
 #run_imputation(sh_imputation, metadata) # run the imputation.sh
 #imputation = imputation_choice() # choice the imputation method to use
-#normalization = normalization_choice() # choice the normalization method to use
-#taxa_type = table_choice() # choice the taxa type to use
+normalization = normalization_choice() # choice the normalization method to use
+taxa_type = table_choice() # choice the taxa type to use
 #run_normalization(sh_normalization, taxa_type, normalization, metadata, imputation) # run the normalization.sh
 #run_get_infromations() # get the informations from the normalization.qza file
 #run_metrics(sh_metrics, taxa_type, normalization, metadata) # run the metrics.sh alpha and beta diversity
 #ancom = ANCOM_choice() # choice if you want to run the ANCOM
 #if ancom:
 #    run_ANCOM(sh_ancom, taxa_type, normalization, metadata) # run the ANCOM.sh
-#maslin = MASLIN_choice() # choice if you want to run the MASLIN
-#if maslin:
-#    run_MASLIN(sh_maslin, taxa_type, normalization, metadata) # run the MASLIN.sh
+maslin = MASLIN_choice() # choice if you want to run the MASLIN
+if maslin:
+    run_MASLIN(sh_maslin, taxa_type, normalization, metadata) # run the MASLIN.sh
 #run_intersecate_ANCOM_MaAsLin() # run the intersecate_ANCOM_MaAsLin.sh
-run_longitudinal_analysis(sh_longitudinal_extract ,sh_longitudinal_analysis, metadata) # run the longitudinal_analysis.sh
+#run_longitudinal_analysis(sh_longitudinal_extract ,sh_longitudinal_analysis, metadata) # run the longitudinal_analysis.sh

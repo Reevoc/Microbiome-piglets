@@ -64,7 +64,7 @@ fit_data <- Maaslin2(
     random_effects = list_random, # if you have any random effects
     #normalization = "NONE", # or your chosen normalization method
     reference = c("diarrhea,n"), # setting 'n' as the reference level for 'diarrhea'
-    max_significance = 0.0005
+    #max_significance = 0.7
 )
 
 print("--> Differential Abundance analysis ENDED")

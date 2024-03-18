@@ -39,7 +39,7 @@ We use a Bioconductor Docker image for this project. To set it up:
    docker --version
    ```
 
-2. **Data Access**: Fill out this [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSeKRsjQGNdVdc4p3p-S8nd3CzaONulH37o6G3FsukSVDElz-Q/viewform) to receive the dataset links from Google Drive. You will receive two zipped files: `microbioma-starter-pack.zip` for initial setup and `microbiome-final-pack.zip` containing complete data and analyses.
+2. **Data Access**: Fill out this [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSeKRsjQGNdVdc4p3p-S8nd3CzaONulH37o6G3FsukSVDElz-Q/viewform) to receive the dataset links from Google Drive. You will receive two zipped files: `microbioma-starter-pack.zip` for initial setup to run the full analysis and `microbiome-final-pack.zip` containing complete data and analyses already done.
 
    After downloading the data:
    ```bash

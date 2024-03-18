@@ -86,3 +86,7 @@ We use a Bioconductor Docker image for this project. To set it up:
 ## Using the App
 
 Our application is designed to be user-friendly and interactive. It will guide you through each step, asking for your input on the desired operations. Remember, on your first run, you'll need to set up everything as prompted. In subsequent runs, you can choose to skip certain steps and focus on specific areas as needed. Happy exploring!
+
+## Bioinformatic Pipeline
+Here we can see the bioinformatic pipeline followed by this computational framework.
+![Pipeline](/utility/images/pipeline.png)
